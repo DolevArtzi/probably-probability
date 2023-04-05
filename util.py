@@ -5,6 +5,9 @@ from Bernoulli import Bernoulli
 from Geometric import Geometric
 
 class Util:
+    def __init__(self):
+        self.rvs = {'binomial':(Binomial,(20,.5)),'uniform':(Uniform,(0,1)),'bernoulli':(Bernoulli,(.5,)),'geometric':(Geometric,(0.1,))}
+
     """
     Markov's Inequality
 
@@ -31,16 +34,42 @@ class Util:
     def flipCoin(self,n,p):
         return Binomial(n,p).genVar()
 
+    """
+    Generates k random instances of each distribution in self.rvs, and displays the averages
+    
+    """
+    def simAll(self,k):
+        res = []
+        avgs = {}
+        print('=' * 50)
+        print(f'---  Statistics for k = {k} iterations ---')
+        for rv_name in self.rvs:
+            rv, conditions = self.rvs[rv_name]
+            X = rv(*conditions)
+            r = X.simulate(k,aggregate=False)
+            res.append(r)
+            if r:
+                avgs[rv_name] = sum(r) / k
+            else:
+                avgs.append(0)
+            print(f'{X}: Average = {avgs[rv_name]}')
+        print('=' * 50)
 
+    """
+    Returns a random instance of an RV given the name of the distribution and its necessary parameters
+    """
+    def generateRV(self,rv_name,*conditions,display=True):
+        rv = self.rvs[rv_name][0]
+        X = rv(*conditions)
+        y = X.genVar()
+        if display:
+            print(f'{X}: {y}')
+        return y
 
 u = Util()
 
 if __name__ == '__main__':
-    # print(u.flipFairCoin(500))
-    # X = Binomial(100,0.5)
-    # # print(X.tail(130))
-    # print(u.chebyshevs(X,50))
-    # print(X.variance())
-
-    A = Geometric(.5)
-    A.simRounds(20,100,False)
+    print(u.generateRV('uniform',0,1))
+    # u.simAll(1000)
+    X = Uniform(1/2,3/4)
+    print(X._paramString())
