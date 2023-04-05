@@ -1,7 +1,6 @@
 from RandomVariable import RandomVariable
 from Uniform import Uniform
 import math
-import random
 
 class Binomial(RandomVariable):
     def __init__(self, n, p):
@@ -18,6 +17,9 @@ class Binomial(RandomVariable):
     def expectedValue(self):
         return self.n * self.p
 
+    def variance(self):
+        return self.n * self.p * (1 - self.p)
+
     """
     Generates a Bin(n,p) random variable using the Inverse Transform Method 
     (PnC book pg. 231, "Simulation" [Ross] pg. 57).
@@ -29,7 +31,6 @@ class Binomial(RandomVariable):
         p_x(i+1) = p/[1-p] * [n-i]/[i+1] * p_x(i)
 
     """
-
     def genVar(self):
         C = self.p / (1 - self.p)
         U = Uniform(0, 1).genVar()
@@ -45,7 +46,6 @@ class Binomial(RandomVariable):
         return i
 
     """Uses same recursive trick as above"""
-
     def cdf(self, k):
         if k < 0:
             return 0
@@ -72,5 +72,6 @@ class Binomial(RandomVariable):
 if __name__ == '__main__':
     x = Binomial(100,0.01)
     print(x.simulate(50,False))
+    print(Binomial(100,.34).variance())
 
 

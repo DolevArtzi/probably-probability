@@ -13,6 +13,29 @@ class RandomVariable:
     def pdf(self,a):
         pass
 
+    def expectedValue(self):
+        pass
+
+    """
+    Cumulative Distribution Function
+
+    P[X <= k]
+    """
+    def cdf(self, k):
+        pass
+
+    """
+    Tail Probability
+
+    P[X > k]
+    """
+    def tail(self, k):
+        return 1 - self.cdf(k)
+
+
+    def variance(self):
+        pass
+
     """
     Generates an instance of a random variable, given the distribution
     """
@@ -53,23 +76,5 @@ class RandomVariable:
                     print(f'Average round {i+1} = {a}')
             print(f'Total Average = {sum(avgs)/rounds}')
 
-    def expectedValue(self):
-        pass
-
-    """
-    Cumulative Distribution Function
-    
-    P[X <= k]
-    """
-    def cdf(self,k):
-        pass
-
-    """
-    Tail Probability
-    
-    P[X > k]
-    """
-    def tail(self,k):
-        return 1 - self.cdf(k)
 
 

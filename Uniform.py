@@ -10,6 +10,11 @@ class Uniform(RandomVariable):
     def pdf(self,x):
         return 1/(self.b-self.a) if self.a <= x <= self.b else 0
 
+    def cdf(self,x):
+        if self.a <= x <= self.b:
+            return (x-self.a)/(self.b-self.a)
+        return 0
+
     def expectedValue(self):
         return (self.b + self.a) / 2
 

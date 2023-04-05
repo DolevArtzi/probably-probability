@@ -27,3 +27,6 @@ class Bernoulli(RandomVariable):
         if k == 1:
             return 1
         return 1 - self.p
+
+    def variance(self):
+        return self.p * (1 - self.p)
