@@ -5,12 +5,26 @@ class RandomVariable:
     def __init__(self):
         pass
 
+    """
+    Probability Density Function 
+    
+    returns P[X == a]
+    """
     def pdf(self,a):
         pass
 
+    """
+    Generates an instance of a random variable, given the distribution
+    """
     def genVar(self):
         pass
 
+    """
+    Simulates k independent generations of the random variable
+    
+    - output: if true, will print each generated value  
+    - aggregate: if true, will print the average value
+    """
     def simulate(self,k,output=False,aggregate=True):
         r = []
         for _ in range(k):
@@ -21,7 +35,14 @@ class RandomVariable:
             print(f'Average = {sum(r)/k}')
         return r
 
-    def simRounds(self,rounds,k,short=True,output=False,aggregate=True,):
+    """
+    Simulates k independent generations of the random variable, "rounds" times. 
+    
+    - short: if false (and aggregate is true), will print the average value for each round
+    - output: if true, will print each generated value  
+    - aggregate: if true, will print the average value across all rounds
+    """
+    def simRounds(self,rounds,k,short=True,output=False,aggregate=True):
         r = []
         for _ in range(rounds):
             r.append(self.simulate(k,output,False))
@@ -35,9 +56,19 @@ class RandomVariable:
     def expectedValue(self):
         pass
 
+    """
+    Cumulative Distribution Function
+    
+    P[X <= k]
+    """
     def cdf(self,k):
         pass
 
+    """
+    Tail Probability
+    
+    P[X > k]
+    """
     def tail(self,k):
         return 1 - self.cdf(k)
 
