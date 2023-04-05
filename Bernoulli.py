@@ -1,9 +1,14 @@
 from RandomVariable import RandomVariable
 import random
 
+""""
+Bernoulli random variable, coin flip with probability p of heads
+"""
 class Bernoulli(RandomVariable):
     def __init__(self,p):
         super().__init__()
+        self.min = 0
+        self.max = 1
         self.p = p
 
     def pdf(self,a):

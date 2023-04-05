@@ -1,9 +1,20 @@
 import math
 import random
-
+from Uniform import Uniform
 class RandomVariable:
     def __init__(self):
+        self.min = None
+        self.max = None
+        self.discrete = True
         pass
+
+    def getMin(self,m):
+        return self.min
+
+    def getMax(self,m):
+        return self.max
+    def isDiscrete(self):
+        return self.discrete
 
     """
     Probability Density Function 
@@ -75,6 +86,3 @@ class RandomVariable:
                 for i,a in enumerate(avgs):
                     print(f'Average round {i+1} = {a}')
             print(f'Total Average = {sum(avgs)/rounds}')
-
-
-

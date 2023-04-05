@@ -36,5 +36,7 @@ u = Util()
 
 if __name__ == '__main__':
     # print(u.flipFairCoin(500))
-    X = Binomial(500,.3)
-    print(X.tail(130))
+    X = Binomial(100,0.5)
+    # print(X.tail(130))
+    print(u.chebyshevs(X,50))
+    print(X.variance())

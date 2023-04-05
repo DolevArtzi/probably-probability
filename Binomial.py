@@ -2,9 +2,16 @@ from RandomVariable import RandomVariable
 from Uniform import Uniform
 import math
 
+"""
+Binomial RV
+
+Number of successes in n independent trails with success probability p in each trial
+"""
 class Binomial(RandomVariable):
     def __init__(self, n, p):
         super().__init__()
+        self.min = 0
+        self.max = n
         self.n = n
         self.p = p
         self.qn = math.pow(1 - p, n)
