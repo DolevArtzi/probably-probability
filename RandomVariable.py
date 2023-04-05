@@ -1,6 +1,5 @@
 import math
 import random
-from Uniform import Uniform
 class RandomVariable:
     def __init__(self):
         self.min = None
@@ -67,6 +66,8 @@ class RandomVariable:
                 print(r[-1])
         if aggregate:
             print(f'Average = {sum(r)/k}')
+            if output:
+                print(f'Outcomes: {r}')
         return r
 
     """

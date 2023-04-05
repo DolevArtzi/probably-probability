@@ -2,6 +2,7 @@ from RandomVariable import RandomVariable
 from Binomial import Binomial
 from Uniform import Uniform
 from Bernoulli import Bernoulli
+from Geometric import Geometric
 
 class Util:
     """
@@ -36,7 +37,10 @@ u = Util()
 
 if __name__ == '__main__':
     # print(u.flipFairCoin(500))
-    X = Binomial(100,0.5)
-    # print(X.tail(130))
-    print(u.chebyshevs(X,50))
-    print(X.variance())
+    # X = Binomial(100,0.5)
+    # # print(X.tail(130))
+    # print(u.chebyshevs(X,50))
+    # print(X.variance())
+
+    A = Geometric(.5)
+    A.simRounds(20,100,False)
