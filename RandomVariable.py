@@ -125,7 +125,10 @@ class Binomial(RandomVariable):
 
     """Uses same recursive trick as above"""
     def cdf(self,k):
-        #c1 = sum([self.pdf(i) for i in range(k+1)])
+        if k < 0:
+            return 0
+        if k > self.n:
+            return 1
         C = self.p / (1-self.p)
         pr = self.qn
         F = pr
@@ -135,6 +138,14 @@ class Binomial(RandomVariable):
             F += pr
             i += 1
         return min(F,1)
+
+    def cdfSlow(self,k):
+        if k < 0:
+            return 0
+        if k > self.n:
+            return 1
+        return sum([self.pdf(i) for i in range(k+1)])
+
 
 
 if __name__ == '__main__':
