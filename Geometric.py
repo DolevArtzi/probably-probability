@@ -15,6 +15,8 @@ class Geometric(RandomVariable):
         self.min = 1
         self.max = None
         self.p = p
+        self.params.append(p)
+        self.name = 'geometric'
 
     def pdf(self,i):
         if i > 0:

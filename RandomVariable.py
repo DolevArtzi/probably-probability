@@ -1,10 +1,15 @@
 import math
 import random
+
+
+#random number of random variables / laplace transform/ combining rvs
 class RandomVariable:
     def __init__(self):
+        self.params = []
         self.min = None
         self.max = None
         self.discrete = True
+        self.name = None
         pass
 
     def getMin(self,m):
@@ -47,7 +52,9 @@ class RandomVariable:
         pass
 
     """
-    Generates an instance of a random variable, given the distribution
+    Generates an instance of a random variable, given the distribution.
+    
+    Similar to Mathematica's RandomVariate[..] function.
     """
     def genVar(self):
         pass
@@ -87,3 +94,12 @@ class RandomVariable:
                 for i,a in enumerate(avgs):
                     print(f'Average round {i+1} = {a}')
             print(f'Total Average = {sum(avgs)/rounds}')
+
+    def _paramString(self):
+        s = ''
+        for p in self.params[:-1]:
+            s += str(p) + ','
+        return s + str(self.params[-1])
+
+    def __str__(self):
+        return f'{self.name.capitalize()}({self._paramString()})'

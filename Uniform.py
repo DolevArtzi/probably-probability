@@ -14,6 +14,9 @@ class Uniform(RandomVariable):
         self.min = a
         self.max = b
         self.discrete = False
+        self.params.append(a)
+        self.params.append(b)
+        self.name = 'uniform'
 
     def pdf(self,x):
         return 1/(self.b-self.a) if self.a <= x <= self.b else 0

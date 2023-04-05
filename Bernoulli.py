@@ -10,6 +10,8 @@ class Bernoulli(RandomVariable):
         self.min = 0
         self.max = 1
         self.p = p
+        self.params.append(p)
+        self.name = 'bernoulli'
 
     def pdf(self,a):
         if a == 1:

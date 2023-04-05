@@ -15,6 +15,9 @@ class Binomial(RandomVariable):
         self.n = n
         self.p = p
         self.qn = math.pow(1 - p, n)
+        self.params.append(n)
+        self.params.append(p)
+        self.name = 'binomial'
 
     def pdf(self, k):
         if k < 0 or k > self.n or k % 1:
