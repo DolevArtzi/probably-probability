@@ -3,21 +3,7 @@ import random
 
 class RandomVariable:
     def __init__(self):
-        self.min = None
-        self.max = None
-        self.discrete = True
-
-    def setMin(self,m):
-        self.min = m
-
-    def setMax(self,m):
-        self.max = m
-
-    def setDiscrete(self,t):
-        self.discrete = t
-
-    def isDiscrete(self,t):
-        return self.discrete
+        pass
 
     def pdf(self,a):
         pass
@@ -58,8 +44,6 @@ class RandomVariable:
 class Bernoulli(RandomVariable):
     def __init__(self,p):
         super().__init__()
-        self.setMin(0)
-        self.setMax(1)
         self.p = p
 
     def pdf(self,a):
@@ -87,9 +71,6 @@ class Bernoulli(RandomVariable):
 class Uniform(RandomVariable):
     def __init__(self,a,b):
         super().__init__()
-        self.setMin(a)
-        self.setMax(b)
-        self.setDiscrete(False)
         self.a = a
         self.b = b
 
@@ -105,8 +86,6 @@ class Uniform(RandomVariable):
 class Binomial(RandomVariable):
     def __init__(self,n,p):
         super().__init__()
-        self.setMin(0)
-        self.setMax(n)
         self.n = n
         self.p = p
         self.qn = math.pow(1-p,n)
