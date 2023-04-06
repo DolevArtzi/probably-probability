@@ -8,6 +8,7 @@ Work with all your favorite random variables.
 * Bernoulli
 * Binomial
 * Geometric
+* Hyper geometric
 
 ### Continuous
 
@@ -19,10 +20,12 @@ Work with all your favorite random variables.
   * Expected value
   * PDF
   * CDF
+    * Generic and recursive
   * Tail
   * Variance
 * Simulation
   * Generate a random instance of a given distribution
+    * Generic and recursive inverse transform method
   * *k* rounds of generating independent instances of a given distribution
   * *k* independent rounds, *j* times
 
