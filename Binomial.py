@@ -71,14 +71,6 @@ class Binomial(RandomVariable):
             i += 1
         return min(F, 1)
 
-    def _cdfSlow(self, k):
-        # calculates the cdf naively
-        if k < 0:
-            return 0
-        if k > self.n:
-            return 1
-        return sum([self.pdf(i) for i in range(k + 1)])
-
 if __name__ == '__main__':
     x = Binomial(100,0.01)
     print(x.simulate(50,False))

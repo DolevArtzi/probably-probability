@@ -13,7 +13,7 @@ class Geometric(RandomVariable):
     def __init__(self,p):
         super().__init__()
         self.min = 1
-        self.max = None
+        self.max = float('inf')
         self.p = p
         self.params.append(p)
         self.name = 'geometric'
@@ -21,6 +21,7 @@ class Geometric(RandomVariable):
     def pdf(self,i):
         if i > 0:
             return self.p * math.pow((1-self.p),i-1)
+        return 0
 
     def cdf(self,x):
         if x >= 1:
