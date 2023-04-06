@@ -1,9 +1,9 @@
 import math
 import random
+from abc import ABC, abstractmethod
 
 
-#random number of random variables / laplace transform/ combining rvs
-class RandomVariable:
+class RandomVariable(ABC):
     def __init__(self):
         self.params = []
         self.min = None
@@ -12,10 +12,10 @@ class RandomVariable:
         self.name = None
         pass
 
-    def getMin(self,m):
+    def getMin(self):
         return self.min
 
-    def getMax(self,m):
+    def getMax(self):
         return self.max
     def isDiscrete(self):
         return self.discrete
@@ -25,9 +25,12 @@ class RandomVariable:
     
     returns P[X == a]
     """
+
+    @abstractmethod
     def pdf(self,a):
         pass
 
+    @abstractmethod
     def expectedValue(self):
         pass
 
@@ -36,6 +39,7 @@ class RandomVariable:
 
     P[X <= k]
     """
+    @abstractmethod
     def cdf(self, k):
         pass
 
@@ -47,7 +51,7 @@ class RandomVariable:
     def tail(self, k):
         return 1 - self.cdf(k)
 
-
+    @abstractmethod
     def variance(self):
         pass
 
@@ -56,8 +60,62 @@ class RandomVariable:
     
     Similar to Mathematica's RandomVariate[..] function.
     """
+
+    @abstractmethod
     def genVar(self):
         pass
+
+    """
+    For distributions with the following property:
+    
+    P[X = i+1] = C f(i) * P[X = i]
+    
+    uses the inverse transform method to generate a random variate of the distribution
+    
+    C: see above
+    f: see above
+    pr: P[X = X.min]
+    
+    Time Complexity: O(n * cost(f)) (note cost(f) is constant for both binomial and hypergeometric)
+    """
+    def inverseTransform(self,C,pr,f):
+        U = random.random()
+        F = pr
+        i = 0
+        while U >= F:
+            pr *= (C * f(i))
+            F += pr
+            if i == self.max:
+                break
+            i += 1
+        return i
+
+    """
+    Generates an instance of a random variable using the inverse transform method. 
+    
+    Time Complexity: O(n * cost(pdf)) (note cost(pdf) can be very large, e.g. binomial/hypergeometric)
+    """
+    def _slowInverseTransform(self):
+        U = random.random()
+        i = self.min
+        pr = self.pdf(i)
+        F = pr
+        while U >= F:
+            i += 1
+            F += self.pdf(i)
+            if i == self.max:
+                break
+        return i
+
+    """
+    Calculates the cdf naively
+    """
+    def _cdfSlow(self, k):
+        if k < 0:
+            return 0
+        if k > self.max:
+            return 1
+        return sum([self.pdf(i) for i in range(k + 1)])
 
     """
     Simulates k independent generations of the random variable
@@ -102,4 +160,4 @@ class RandomVariable:
         return s + str(self.params[-1])
 
     def __str__(self):
-        return f'{self.name.capitalize()}({self._paramString()})'
+        return f'{"".join([x.capitalize() for x in self.name.split(" ")])}({self._paramString()})'
