@@ -3,10 +3,16 @@ from Binomial import Binomial
 from Uniform import Uniform
 from Bernoulli import Bernoulli
 from Geometric import Geometric
+from HyperGeometric import HyperGeometric
 
 class Util:
     def __init__(self):
-        self.rvs = {'binomial':(Binomial,(20,.5)),'uniform':(Uniform,(0,1)),'bernoulli':(Bernoulli,(.5,)),'geometric':(Geometric,(0.1,))}
+        self.rvs = {'binomial':(Binomial,(20,.5)),
+                    'uniform':(Uniform,(0,1)),
+                    'bernoulli':(Bernoulli,(.5,)),
+                    'geometric':(Geometric,(0.1,)),
+                    'hyper geometric':(HyperGeometric, (20,20,20))
+                    }
 
     """
     Markov's Inequality
@@ -69,7 +75,12 @@ class Util:
 u = Util()
 
 if __name__ == '__main__':
-    print(u.generateRV('uniform',0,1))
-    # u.simAll(1000)
-    X = Uniform(1/2,3/4)
-    print(X._paramString())
+    # x = HyperGeometric(1,10,10)
+    # print(x._slowInverseTransform())
+    # print(x.genVar())
+    # u.simAll(100)
+
+    X = Binomial(20,.5)
+    U = Uniform(0,1).genVar()
+    print(X.genVar(U))
+    print(X.inverseTransform(X.p / (1 - X.p), X.qn,lambda j: (X.n - j) / (1 + j),U))

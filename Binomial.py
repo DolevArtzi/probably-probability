@@ -41,19 +41,24 @@ class Binomial(RandomVariable):
         p_x(i+1) = p/[1-p] * [n-i]/[i+1] * p_x(i)
 
     """
-    def genVar(self):
-        C = self.p / (1 - self.p)
-        U = Uniform(0, 1).genVar()
-        pr = self.qn
-        F = pr
-        i = 0
-        while U >= F:
-            pr *= (C * (self.n - i) / (i + 1))
-            F += pr
-            if i == self.n:
-                break
-            i += 1
-        return i
+    # def genVar(self):
+    #     C = self.p / (1 - self.p)
+    #     U = Uniform(0, 1).genVar()
+    #     pr = self.qn
+    #     F = pr
+    #     i = 0
+    #     while U >= F:
+    #         pr *= (C * (self.n - i) / (i + 1))
+    #         F += pr
+    #         if i == self.n:
+    #             break
+    #         i += 1
+    #     return i
+
+    def _f(self,i):
+        return (self.n - i) / (i+1)
+    def genVar(self,U):
+        return self.inverseTransform(self.p / (1 - self.p), self.qn , self._f,U)
 
     """Uses same recursive trick as above"""
     def cdf(self, k):
