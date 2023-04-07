@@ -8,7 +8,7 @@ Binomial RV
 Number of successes in n independent trails with success probability p in each trial
 """
 class Binomial(RandomVariable):
-    def __init__(self, n, p):
+    def __init__(self, n, p,symmetric = True):
         super().__init__()
         self.min = 0
         self.max = n
@@ -18,6 +18,8 @@ class Binomial(RandomVariable):
         self.params.append(n)
         self.params.append(p)
         self.name = 'binomial'
+        if p == .5:
+            self.setSymmetric(True)
 
     def pdf(self, k):
         if k < 0 or k > self.n or k % 1:
@@ -39,26 +41,27 @@ class Binomial(RandomVariable):
         p_x(0) = (1-p)^n
 
         p_x(i+1) = p/[1-p] * [n-i]/[i+1] * p_x(i)
-
+        
+        * Currently left as an artifact, not meant for use. Use genVar instead.
     """
-    # def genVar(self):
-    #     C = self.p / (1 - self.p)
-    #     U = Uniform(0, 1).genVar()
-    #     pr = self.qn
-    #     F = pr
-    #     i = 0
-    #     while U >= F:
-    #         pr *= (C * (self.n - i) / (i + 1))
-    #         F += pr
-    #         if i == self.n:
-    #             break
-    #         i += 1
-    #     return i
+    def _binomialInverseTransform(self):
+        C = self.p / (1 - self.p)
+        U = Uniform(0, 1).genVar()
+        pr = self.qn
+        F = pr
+        i = 0
+        while U >= F:
+            pr *= (C * (self.n - i) / (i + 1))
+            F += pr
+            if i == self.n:
+                break
+            i += 1
+        return i
 
     def _f(self,i):
         return (self.n - i) / (i+1)
-    def genVar(self,U):
-        return self.inverseTransform(self.p / (1 - self.p), self.qn , self._f,U)
+    def genVar(self):
+        return self.inverseTransform(self.p / (1 - self.p), self.qn , self._f)
 
     """Uses same recursive trick as above"""
     def cdf(self, k):
@@ -78,7 +81,6 @@ class Binomial(RandomVariable):
 
 if __name__ == '__main__':
     x = Binomial(100,0.01)
-    print(x.simulate(50,False))
-    print(Binomial(100,.34).variance())
+    print(x.symmetric)
 
 

@@ -5,12 +5,16 @@ from abc import ABC, abstractmethod
 
 class RandomVariable(ABC):
     def __init__(self):
+        self.symmetric = False
         self.params = []
         self.min = None
         self.max = None
         self.discrete = True
         self.name = None
         pass
+
+    def setSymmetric(self,s):
+        self.symmetric = s
 
     def getMin(self):
         return self.min
@@ -125,12 +129,13 @@ class RandomVariable(ABC):
     """
     def simulate(self,k,output=False,aggregate=True):
         r = []
+        μ = self.expectedValue()
         for _ in range(k):
             r.append(self.genVar())
             if output:
                 print(r[-1])
         if aggregate:
-            print(f'Average = {sum(r)/k}')
+            print(f'{self}: Average = {(sum(r)/k):.5f}' + (f'  Sample Variance =  {(sum([(xi - μ) ** 2 for xi in r]) / (k - 1)):.5f}' if k > 1 else ''))
             if output:
                 print(f'Outcomes: {r}')
         return r
