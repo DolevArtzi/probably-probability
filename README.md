@@ -9,6 +9,7 @@ Work with all your favorite random variables.
 * Binomial
 * Geometric
 * Hyper geometric
+* Poisson
 
 ### Continuous
 
