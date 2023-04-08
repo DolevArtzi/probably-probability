@@ -6,6 +6,7 @@ from Uniform import Uniform
 from Bernoulli import Bernoulli
 from Geometric import Geometric
 from HyperGeometric import HyperGeometric
+from Poisson import Poisson
 
 class Util:
     def __init__(self):
@@ -13,7 +14,8 @@ class Util:
                     'uniform':(Uniform,(0,1)),
                     'bernoulli':(Bernoulli,(.5,)),
                     'geometric':(Geometric,(0.1,)),
-                    'hyper geometric':(HyperGeometric, (20,20,20))
+                    'hyper geometric':(HyperGeometric, (20,20,20)),
+                    'poisson':(Poisson,(12,))
                     }
 
     """
@@ -82,7 +84,6 @@ class Util:
                 avgs[rv_name] = sum(r) / k
             else:
                 avgs.append(0)
-            # print(f'{X}: Average = {avgs[rv_name]:.4f}')
         print('=' * 75)
 
     """
@@ -99,4 +100,10 @@ class Util:
 u = Util()
 
 if __name__ == '__main__':
-    u.simAll(10000)
+    u.simAll(100000)
+    # X = Poisson(12)
+    # print(X.genVar())
+    # print(X.pdf(0))
+    # print(X.pdf(1))
+    # print(X.cdf(1))
+    # print(X.cdf(2))

@@ -82,10 +82,21 @@ class RandomVariable(ABC):
     
     Time Complexity: O(n * cost(f)) (note cost(f) is constant for both binomial and hypergeometric)
     """
-    def inverseTransform(self,C,pr,f):
+    def inverseTransform(self,C,pr,f,startFromK=None):
         U = random.random()
-        F = pr
-        i = 0
+        if startFromK:
+            F = 0
+            for i in range(self.min,startFromK):
+                F += self.pdf(i)
+                if F >= U:
+                    # print(F,U)
+                    # print('retu')
+                    # print(i)
+                    return i
+            i = startFromK
+        else:
+            F = pr
+            i = self.min
         while U >= F:
             pr *= (C * f(i))
             F += pr
@@ -107,6 +118,7 @@ class RandomVariable(ABC):
         while U >= F:
             i += 1
             F += self.pdf(i)
+            pr = pr+self.pdf(i)
             if i == self.max:
                 break
         return i
@@ -115,7 +127,7 @@ class RandomVariable(ABC):
     Calculates the cdf naively
     """
     def _cdfSlow(self, k):
-        if k < 0:
+        if k < self.min:
             return 0
         if k > self.max:
             return 1
@@ -156,7 +168,7 @@ class RandomVariable(ABC):
             if not short:
                 for i,a in enumerate(avgs):
                     print(f'Average round {i+1} = {a}')
-            print(f'Total Average = {sum(avgs)/rounds}')
+            print(f'Total Average = {sum(avgs)/rounds:.5f}')
 
     def _paramString(self):
         s = ''
