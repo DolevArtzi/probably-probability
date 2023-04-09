@@ -1,5 +1,4 @@
 from RandomVariable import RandomVariable
-import random
 import math
 
 from Uniform import Uniform

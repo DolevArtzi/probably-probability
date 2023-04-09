@@ -9,6 +9,7 @@ class Poisson(RandomVariable):
         self.λ = λ
         self.params.append(λ)
         self.name = 'poisson'
+        self.eNegλ = math.exp(-λ)
 
     def pdf(self,i):
         if i >= 0:
@@ -31,10 +32,9 @@ class Poisson(RandomVariable):
         return self.λ
 
     def f(self,i):
-        return 1 / i
+        return 1 / (i + 1)
     def genVar(self):
-        x = self.inverseTransform(self.λ,self.pdf(0),self.f,1)
-        return x - 1
+        return self.inverseTransform(self.λ,self.eNegλ,self.f)
 
 if __name__ == '__main__':
     X = Poisson(50)
