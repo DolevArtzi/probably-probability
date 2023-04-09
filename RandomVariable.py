@@ -89,9 +89,6 @@ class RandomVariable(ABC):
             for i in range(self.min,startFromK):
                 F += self.pdf(i)
                 if F >= U:
-                    # print(F,U)
-                    # print('retu')
-                    # print(i)
                     return i
             i = startFromK
         else:

@@ -7,6 +7,7 @@ from Bernoulli import Bernoulli
 from Geometric import Geometric
 from HyperGeometric import HyperGeometric
 from Poisson import Poisson
+from Exponential import Exponential
 
 class Util:
     def __init__(self):
@@ -15,7 +16,8 @@ class Util:
                     'bernoulli':(Bernoulli,(.5,)),
                     'geometric':(Geometric,(0.1,)),
                     'hyper geometric':(HyperGeometric, (20,20,20)),
-                    'poisson':(Poisson,(12,))
+                    'poisson':(Poisson,(12,)),
+                    'exponential':(Exponential, (1/10,))
                     }
 
     """
@@ -100,10 +102,4 @@ class Util:
 u = Util()
 
 if __name__ == '__main__':
-    u.simAll(100000)
-    # X = Poisson(12)
-    # print(X.genVar())
-    # print(X.pdf(0))
-    # print(X.pdf(1))
-    # print(X.cdf(1))
-    # print(X.cdf(2))
+    u.simAll(80000)
