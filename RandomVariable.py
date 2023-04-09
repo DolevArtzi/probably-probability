@@ -172,5 +172,13 @@ class RandomVariable(ABC):
             s += str(p) + ','
         return s + str(self.params[-1])
 
+    def acceptRejectSim(self,subject,target,c):
+        Y = subject.genVar()
+        U = random.random()
+        while U <= subject.pdf(Y)/(c * target.pdf(Y)):
+            Y = subject.genVar()
+            U = random.random()
+        return Y
+
     def __str__(self):
         return f'{"".join([x.capitalize() for x in self.name.split(" ")])}({self._paramString()})'
