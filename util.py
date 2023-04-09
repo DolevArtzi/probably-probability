@@ -8,6 +8,7 @@ from Geometric import Geometric
 from HyperGeometric import HyperGeometric
 from Poisson import Poisson
 from Exponential import Exponential
+from Normal import Normal
 
 class Util:
     def __init__(self):
@@ -17,9 +18,9 @@ class Util:
                     'geometric':(Geometric,(0.1,)),
                     'hyper geometric':(HyperGeometric, (20,20,20)),
                     'poisson':(Poisson,(12,)),
-                    'exponential':(Exponential, (1/10,))
+                    'exponential':(Exponential, (1/10,)),
+                    'normal':(Normal, (0,1))
                     }
-
     """
     Markov's Inequality
 
@@ -99,7 +100,41 @@ class Util:
             print(f'{X}: {y}')
         return y
 
+    def _avgVar(self,data):
+        if not data:
+            return None
+        k = len(data)
+        avg = sum(data) / k
+        avg_var = sum([(x - avg) ** 2 for x in data]) / k
+        return avg,avg_var
+    def guess(self,data=None,k=None,target=None,verbose=False):
+        if data:
+            avg,var = self._avgVar(data)
+            m = {}
+            for rv_name in self.rvs:
+                rv, conditions = self.rvs[rv_name]
+                X = rv(*conditions)
+                m[str(X)] = X.expectedValue(),X.variance()
+            best = float('inf')
+            name = None
+            r = []
+            for x in m:
+                diff = abs(m[x][0] - avg) + abs(m[x][1] - var)
+                r.append((x,diff))
+                if diff < best:
+                    best = diff
+                    name = x
+            if verbose:
+                print(r)
+            print(f'Best fit: {name}')
+            return name
+        if k != None and target:
+            data = [target.genVar() for _ in range(k)]
+            return self.guess(data)
+        return -1
 u = Util()
 
+
 if __name__ == '__main__':
-    u.simAll(80000)
+    for rv_name in u.rvs:
+        print(rv_name,u.guess(None,1000,u.rvs[rv_name][0](*(u.rvs[rv_name][1]))))
