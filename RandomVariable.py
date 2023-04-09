@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 
 class RandomVariable(ABC):
     def __init__(self):
+        self.strictLower = True
         self.symmetric = False
         self.params = []
         self.min = None
@@ -12,6 +13,12 @@ class RandomVariable(ABC):
         self.discrete = True
         self.name = None
         pass
+
+    """
+    t: boolean, true if the disstribution's support is inclusive of self.min, false otherwise.
+    """
+    def setStrictLower(self,t):
+        self.strictLower = t
 
     def setSymmetric(self,s):
         self.symmetric = s
@@ -82,18 +89,10 @@ class RandomVariable(ABC):
     
     Time Complexity: O(n * cost(f)) (note cost(f) is constant for both binomial and hypergeometric)
     """
-    def inverseTransform(self,C,pr,f,startFromK=None):
+    def inverseTransform(self,C,pr,f):
         U = random.random()
-        if startFromK:
-            F = 0
-            for i in range(self.min,startFromK):
-                F += self.pdf(i)
-                if F >= U:
-                    return i
-            i = startFromK
-        else:
-            F = pr
-            i = self.min
+        F = pr
+        i = self.min
         while U >= F:
             pr *= (C * f(i))
             F += pr

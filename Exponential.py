@@ -12,6 +12,7 @@ class Exponential(RandomVariable):
         self.params.append(λ)
         self.name = 'exponential'
         self.eNegλ = math.exp(-λ)
+        self.setStrictLower(False) #currently doesnt affect anything
 
     def pdf(self,a):
         if a <= 0:
@@ -29,5 +30,13 @@ class Exponential(RandomVariable):
     def variance(self):
         return 1/(self.λ ** 2)
 
+    """
+    u ~ U(0,1), x = Fx^-1(u)
+    Fx(x) = 1 - exp(-λx)
+    u = 1-exp(-λx)
+    exp(-λx) = 1 - u
+    -λx = ln(1-u), but 1 - u ~ U(0,1) too
+    x = -1/λ ln(U(0,1)) [Ross pg. 68]
+    """
     def genVar(self):
         return -(1/self.λ) * math.log(Uniform(0,1).genVar())
