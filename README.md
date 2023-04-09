@@ -15,6 +15,7 @@ Work with all your favorite random variables.
 
 * Uniform
 * Exponential
+* Normal
 
 ## Supported Functionalities
 
@@ -28,6 +29,7 @@ Work with all your favorite random variables.
 * Simulation
   * Generate a random instance of a given distribution
     * Generic and recursive inverse transform method
+    * Continuous accept/reject method
   * *k* rounds of generating independent instances of a given distribution
   * *k* independent rounds, *j* times
 
