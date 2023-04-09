@@ -172,12 +172,16 @@ class RandomVariable(ABC):
             s += str(p) + ','
         return s + str(self.params[-1])
 
+    """
+    Accept-Reject method for generating CRVs
+    
+    [PnC pg. 234]
+    
+    """
     def acceptRejectSim(self,subject,target,c):
         Y = subject.genVar()
-        U = random.random()
-        while U <= subject.pdf(Y)/(c * target.pdf(Y)):
+        while not (target.pdf(Y) / (c * subject.pdf(Y)) - random.random() > 0):
             Y = subject.genVar()
-            U = random.random()
         return Y
 
     def __str__(self):

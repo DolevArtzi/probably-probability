@@ -41,7 +41,7 @@ class Normal(RandomVariable):
         return self.var
 
     """
-    Proof of method used for generating standard normal RVs [Ross 75-76]
+    Proof of method used for generating standard normal RVs [Ross 75-76] or [PnC 235-236]
     X ~ N(0,1), 
     |fx(x)| = 2/sqrt(2π) * exp(-x^2/2) (symmetric about 0)
     
@@ -50,15 +50,17 @@ class Normal(RandomVariable):
     fy(y) = g(y) = exp(-x), 0<x<inf
     
     max_x(f(x)/g(x)) = c = sqrt(2e/π) 
-    
     """
     def genVar(self):
-        x = self.acceptRejectSim(Exponential(1),Normal(0,1),2 * math.sqrt(2 * math.e / math.pi))
+        # note the .5 in c is really to multiply the pdf of N(0,1) by 2 to make it |N(0,1)|
+        x = self.acceptRejectSim(Exponential(1),Normal(0,1),.5 * math.sqrt(2 * math.e / math.pi))
         if Bernoulli(.5).genVar():
             y = x
         else:
             y = -x
         return self.μ + y * self.σ
+
+
 
 if __name__ == '__main__':
     N = Normal(0,1)
