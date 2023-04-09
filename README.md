@@ -14,6 +14,7 @@ Work with all your favorite random variables.
 ### Continuous
 
 * Uniform
+* Exponential
 
 ## Supported Functionalities
 
