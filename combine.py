@@ -2,7 +2,6 @@ from allRVs import *
 
 class Combine:
 
-    #Exponential Distribution
     def minExp(self,X:Exponential,Y:Exponential):
         return Exponential(X.λ + Y.λ)
 
@@ -25,7 +24,7 @@ class Combine:
     Assumes each X_i in vars ~ Exp(1/λ) and the X_i's are independent
     """
     def SumExp(self,vars:list[Exponential]):
-        return Erlang(len(vars),1/vars[0].λ)
+        return Erlang(len(vars),vars[0].λ)
 
     """
     Assumes each X_i in vars ~ Binomial(p) and the X_i's are independent
@@ -39,13 +38,15 @@ class Combine:
     def SumBernoulli(self,vars:list[Bernoulli]):
         return Binomial(len(vars),vars[0].p)
 
+    def compare(self,X,Ys,f):
+        k = 10000
+        Z = f(Ys)
+        X.simulate(k)
+        Z.simulate(k)
 
-
-
-
+c = Combine()
 
 if __name__ == '__main__':
-    X = Exponential(10)
-    Y = Exponential(5)
-    C = Combine()
-    print(C.PXleqYExp(Y,X))
+    X = Erlang(100,10)
+    Ys = [Exponential(10) for _ in range(100)]
+    c.compare(X,Ys,c.SumExp)
