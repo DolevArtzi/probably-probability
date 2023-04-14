@@ -1,6 +1,7 @@
 import math
 import random
 from abc import ABC, abstractmethod
+from sympy import *
 
 
 class RandomVariable(ABC):
@@ -31,6 +32,52 @@ class RandomVariable(ABC):
     def isDiscrete(self):
         return self.discrete
 
+    def _expectedValue(self,*params):
+        pass
+
+    def numParams(self):
+        return len(self.params)
+
+    @staticmethod
+    @abstractmethod
+    def _valid(self,*params):
+        pass
+    def valid(self,*params):
+        return len(params) != self.numParams() and self._valid(*params)
+
+    # import sympy
+
+    def foo(self):
+        x = symbols('x')
+        expr = x**2
+        print("Expression : {}".format(expr))
+
+        # Use sympy.Derivative() method
+        expr_diff = Derivative(expr, x)
+        res = expr_diff.doit_numerically(0.5)
+        print("Derivative of expression with respect to x : {}".format(expr_diff))
+        print("Value of the derivative : {}".format(expr_diff.doit()))
+        print(f'Res = {res}')
+
+    @abstractmethod
+    def laplace(self):
+        pass
+
+    def moment(self,k):
+        laplace = self.laplace()
+        x = symbols('x')
+        expr = laplace(x)
+        curr = expr
+        for i in range(k):
+            if i == k-1:
+                curr = Derivative(curr, x)
+                return abs(curr.doit_numerically(0))
+            else:
+                curr = Derivative(curr,x).doit()
+
+
+
+
     """
     Probability Density Function 
     
@@ -53,6 +100,7 @@ class RandomVariable(ABC):
     @abstractmethod
     def cdf(self, k):
         pass
+
 
     """
     Tail Probability
