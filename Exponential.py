@@ -1,7 +1,6 @@
 from RandomVariable import RandomVariable
 import math
 from Uniform import Uniform
-
 class Exponential(RandomVariable):
 
     def __init__(self,λ):
@@ -27,8 +26,19 @@ class Exponential(RandomVariable):
     def expectedValue(self):
         return 1/self.λ
 
+    def _expectedValue(self,*params):
+        λ = params[0]
+        return 1/λ
+
+    def _valid(self,*params):
+        λ = params[0]
+        return λ > 0
+
     def variance(self):
         return 1/(self.λ ** 2)
+
+    def laplace(self):
+        return lambda s: self.λ/(s+self.λ)
 
     """
     u ~ U(0,1), x = Fx^-1(u)
@@ -40,3 +50,8 @@ class Exponential(RandomVariable):
     """
     def genVar(self):
         return -(1/self.λ) * math.log(Uniform(0,1).genVar())
+
+
+if __name__ == '__main__':
+    X = Exponential(10)
+    print(X.moment(10))
