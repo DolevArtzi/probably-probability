@@ -16,6 +16,7 @@ Work with all your favorite random variables.
 * Uniform
 * Exponential
 * Normal
+* Erlang
 
 ## Supported Functionalities
 
