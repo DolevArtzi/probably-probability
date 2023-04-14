@@ -58,8 +58,6 @@ class RandomVariable(ABC):
         print("Derivative of expression with respect to x : {}".format(expr_diff))
         print("Value of the derivative : {}".format(expr_diff.doit()))
         print(f'Res = {res}')
-
-    @abstractmethod
     def laplace(self):
         pass
 
