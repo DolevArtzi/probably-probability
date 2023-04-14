@@ -9,5 +9,7 @@ from Geometric import Geometric
 from Poisson import Poisson
 
 from HyperGeometric import HyperGeometric
-
+from Normal import Normal
 from RandomVariable import RandomVariable
+
+from Erlang import Erlang
