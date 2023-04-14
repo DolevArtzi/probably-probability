@@ -28,6 +28,17 @@ class Binomial(RandomVariable):
 
     def expectedValue(self):
         return self.n * self.p
+    def _expectedValue(self,*params):
+        print(params)
+        print(self)
+        n = params[0]
+        p = params[1]
+        return n*p
+
+    def _valid(self,*params):
+        n = params[0]
+        p = params[1]
+        return 0 <= p <= 1 and 0 <= n == int(n)
 
     def variance(self):
         return self.n * self.p * (1 - self.p)

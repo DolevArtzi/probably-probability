@@ -30,6 +30,15 @@ class Geometric(RandomVariable):
     def expectedValue(self):
         return 1/self.p
 
+    def _expectedValue(self,*params):
+        p = params[0]
+        return 1/p
+
+    def _valid(self,*params):
+        p = params[0]
+        return 0 <= p <= 1
+
+
     def variance(self):
         return (1 - self.p) / (self.p ** 2)
 

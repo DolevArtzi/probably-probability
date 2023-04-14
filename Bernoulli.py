@@ -37,3 +37,14 @@ class Bernoulli(RandomVariable):
 
     def variance(self):
         return self.p * (1 - self.p)
+
+    def moment(self,k):
+        return self.expectedValue()
+
+    def _expectedValue(self,*params):
+        p = params[0]
+        return p
+
+    def _valid(self,*params):
+        p = params[0]
+        return 0 <= p <= 1

@@ -28,6 +28,14 @@ class Poisson(RandomVariable):
     def expectedValue(self):
         return self.λ
 
+    def _expectedValue(self,*params):
+        λ = params[0]
+        return λ
+
+    def _valid(self,*params):
+        λ = params[0]
+        return λ > 0
+
     def variance(self):
         return self.λ
 

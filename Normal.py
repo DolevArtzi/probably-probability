@@ -37,6 +37,14 @@ class Normal(RandomVariable):
     def expectedValue(self):
         return self.μ
 
+    def _expectedValue(self,*params):
+        μ = params[0]
+        return μ
+
+    def _valid(self,*params):
+        σ = params[1]
+        return σ > 0
+
     def variance(self):
         return self.var
 

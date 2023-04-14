@@ -29,6 +29,16 @@ class Uniform(RandomVariable):
     def expectedValue(self):
         return (self.b + self.a) / 2
 
+    def _expectedValue(self,*params):
+        a = params[0]
+        b = params[1]
+        return (a+b)/2
+
+    def _valid(self, *params):
+        a = params[0]
+        b = params[1]
+        return a < b
+
     def genVar(self):
         return random.uniform(self.a,self.b)
 

@@ -38,6 +38,17 @@ class HyperGeometric(RandomVariable):
     def expectedValue(self):
         return self.N * self.n / (self.N + self.M)
 
+    def _expectedValue(self,*params):
+        N = params[0]
+        M = params[1]
+        n = params[2]
+        return N * n / (N + M)
+
+    def _valid(self,*params):
+        N = params[0]
+        M = params[1]
+        n = params[2]
+        return N >= 0 and M >= 0 and 0 <= n <= N
     def variance(self):
         return self.M * self.expectedValue() * (1 - (self.n - 1) / (self.N + self.M -1)) / (self.M + self.N)
 
