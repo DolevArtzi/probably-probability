@@ -13,3 +13,5 @@ from Normal import Normal
 from RandomVariable import RandomVariable
 
 from Erlang import Erlang
+
+from NegativeBinomial import NegativeBinomial

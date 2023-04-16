@@ -16,7 +16,7 @@ class RandomVariable(ABC):
         pass
 
     """
-    t: boolean, true if the disstribution's support is inclusive of self.min, false otherwise.
+    t: boolean, true if the distribution's support is inclusive of self.min, false otherwise.
     """
     def setStrictLower(self,t):
         self.strictLower = t
@@ -45,19 +45,6 @@ class RandomVariable(ABC):
     def valid(self,*params):
         return len(params) != self.numParams() and self._valid(*params)
 
-    # import sympy
-
-    def foo(self):
-        x = symbols('x')
-        expr = x**2
-        print("Expression : {}".format(expr))
-
-        # Use sympy.Derivative() method
-        expr_diff = Derivative(expr, x)
-        res = expr_diff.doit_numerically(0.5)
-        print("Derivative of expression with respect to x : {}".format(expr_diff))
-        print("Value of the derivative : {}".format(expr_diff.doit()))
-        print(f'Res = {res}')
     def laplace(self):
         pass
 
@@ -73,15 +60,11 @@ class RandomVariable(ABC):
             else:
                 curr = Derivative(curr,x).doit()
 
-
-
-
     """
     Probability Density Function 
     
     returns P[X == a]
     """
-
     @abstractmethod
     def pdf(self,a):
         pass
