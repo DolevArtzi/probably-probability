@@ -33,5 +33,8 @@ Work with all your favorite random variables.
     * Continuous accept/reject method
   * *k* rounds of generating independent instances of a given distribution
   * *k* independent rounds, *j* times
+  * Compare sums of one distribution to other distributions
+      * e.g: Erlang distribution as sum of exponentials
+      * Binomials as sums of Bernoullis, etc.
 
   
