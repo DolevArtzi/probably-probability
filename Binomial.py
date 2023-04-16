@@ -21,6 +21,9 @@ class Binomial(RandomVariable):
         if p == .5:
             self.setSymmetric(True)
 
+    def mgf(self):
+        return lambda t: (1-self.p + self.p * math.e ** t) ** self.n
+
     def pdf(self, k):
         if k < 0 or k > self.n or k % 1:
             return 0
@@ -91,7 +94,7 @@ class Binomial(RandomVariable):
         return min(F, 1)
 
 if __name__ == '__main__':
-    x = Binomial(100,0.01)
-    print(x.symmetric)
+    x = Binomial(20,0.5)
+    print(x.moment(3))
 
 

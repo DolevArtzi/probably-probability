@@ -48,10 +48,16 @@ class RandomVariable(ABC):
     def laplace(self):
         pass
 
-    def moment(self,k):
-        laplace = self.laplace()
+    def mgf(self):
+        pass
+
+    def moment(self,k,useLaplace=False):
+        if useLaplace:
+            f = self.laplace()
+        else:
+            f = self.mgf()
         x = symbols('x')
-        expr = laplace(x)
+        expr = f(x)
         curr = expr
         for i in range(k):
             if i == k-1:
