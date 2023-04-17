@@ -53,6 +53,15 @@ class Erlang(RandomVariable):
         for x in urvs: product *= x
         return -(1/self.λ) * math.log(product)
 
+    """
+    mgf of Erlang(k,λ) defined on t < λ
+    """
+    def mgf(self):
+        return lambda t: (1 - t/self.λ) ** -self.k
+
+    def _getMomentRelatedFunction(self):
+        return self.mgf()
+
 if __name__ == '__main__':
     X = Erlang(50,10)
-    print(X.cdf(5))
+    X.confirm2ndMoment()

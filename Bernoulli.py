@@ -38,9 +38,6 @@ class Bernoulli(RandomVariable):
     def variance(self):
         return self.p * (1 - self.p)
 
-    def moment(self,k):
-        return self.expectedValue()
-
     def _expectedValue(self,*params):
         p = params[0]
         return p
@@ -48,3 +45,11 @@ class Bernoulli(RandomVariable):
     def _valid(self,*params):
         p = params[0]
         return 0 <= p <= 1
+    def moment(self,k):
+        return self.p
+    def _getMomentRelatedFunction(self):
+        pass #not relevant for this distribution
+
+if __name__ == '__main__':
+    X = Bernoulli(.3)
+    print(X.moment(1))

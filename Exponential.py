@@ -11,7 +11,7 @@ class Exponential(RandomVariable):
         self.params.append(λ)
         self.name = 'exponential'
         self.eNegλ = math.exp(-λ)
-        self.setStrictLower(False) #currently doesnt affect anything
+        self.setStrictLower(False) #currently doesn't affect anything
 
     def pdf(self,a):
         if a <= 0:
@@ -50,8 +50,9 @@ class Exponential(RandomVariable):
     """
     def genVar(self):
         return -(1/self.λ) * math.log(Uniform(0,1).genVar())
-
+    def _getMomentRelatedFunction(self):
+        return self.laplace()
 
 if __name__ == '__main__':
-    X = Exponential(10)
-    print(X.moment(10))
+    X = Exponential(3)
+    print(X.moment(10),math.factorial(10)/(3**10))

@@ -93,8 +93,9 @@ class Binomial(RandomVariable):
             i += 1
         return min(F, 1)
 
+    def _getMomentRelatedFunction(self):
+        return self.mgf()
+
 if __name__ == '__main__':
     x = Binomial(20,0.5)
     print(x.moment(3))
-
-
