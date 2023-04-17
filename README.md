@@ -38,5 +38,8 @@ Work with all your favorite random variables.
   * Compare sums of one distribution to other distributions
       * e.g: Erlang distribution as sum of exponentials
       * Binomials as sums of Bernoullis, etc.
+* Visualization
+  * Plotting
+      * CDFs/CMFs, can compare multiple on one plot (ex. Poisson(np) vs. Bin(n,p), Bin(n,1-p) vs. Bin(n,p) etc.)
 
   
