@@ -27,6 +27,8 @@ Work with all your favorite random variables.
     * Generic and recursive
   * Tail
   * Variance
+  * Higher Moments
+      * Via MGF, Laplace/z-Transform, or directly, depending on the distribution
 * Simulation
   * Generate a random instance of a given distribution
     * Generic and recursive inverse transform method
