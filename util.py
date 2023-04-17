@@ -1,15 +1,6 @@
 import math
-
-from RandomVariable import RandomVariable
-from Binomial import Binomial
-from Uniform import Uniform
-from Bernoulli import Bernoulli
-from Geometric import Geometric
-from HyperGeometric import HyperGeometric
-from Poisson import Poisson
-from Exponential import Exponential
-from Normal import Normal
-
+from allRVs import *
+from combine import Combine
 class Util:
     def __init__(self):
         self.rvs = {'binomial':(Binomial,(20,.5)),
@@ -19,7 +10,8 @@ class Util:
                     'hyper geometric':(HyperGeometric, (20,20,20)),
                     'poisson':(Poisson,(12,)),
                     'exponential':(Exponential, (1/10,)),
-                    'normal':(Normal, (0,1))
+                    'normal':(Normal, (0,1)),
+                    'erlang': (Erlang, (3, 1 / 3.5))
                     }
     """
     Markov's Inequality
@@ -132,9 +124,31 @@ class Util:
             data = [target.genVar() for _ in range(k)]
             return self.guess(data)
         return -1
+
+    def iterate(self, f, vars=None, print=False):
+        if not vars:
+            vars = self.rvs
+        if print:
+            r = []
+        for rv_name in vars:
+            rv, conditions = vars[rv_name]
+            X = rv(*conditions)
+            if print:
+                r.append(f(X))
+            else:
+                f(X)
+        if print:
+            print(f'Outcomes: {r}')
+
+    def compareAll2ndMoments(self, rv_names):
+        m = {}
+        for s in rv_names:
+            m[s] = self.rvs[s]
+        self.iterate(RandomVariable.confirm2ndMoment, vars=m)
+
+
 u = Util()
-
-
 if __name__ == '__main__':
-    for rv_name in u.rvs:
-        print(rv_name,u.guess(None,1000,u.rvs[rv_name][0](*(u.rvs[rv_name][1]))))
+    # for rv_name in u.rvs:
+    #     print(rv_name,u.guess(None,1000,u.rvs[rv_name][0](*(u.rvs[rv_name][1]))))
+    u.compareAll2ndMoments(['erlang','binomial','bernoulli','exponential'])
