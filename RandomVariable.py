@@ -48,14 +48,20 @@ class RandomVariable(ABC):
     def laplace(self):
         pass
 
+    def confirm2ndMoment(self):
+        v = self.variance()
+        v2 = self.moment(2) - self.moment(1) ** 2
+        print(f'{self}: Variance: {v}; Variance via Moments: {v2:.5f}')
+
     def mgf(self):
         pass
 
-    def moment(self,k,useLaplace=False):
-        if useLaplace:
-            f = self.laplace()
-        else:
-            f = self.mgf()
+    #@abstractmethod
+    def _getMomentRelatedFunction(self):
+        pass
+
+    def moment(self,k):
+        f = self._getMomentRelatedFunction()
         x = symbols('x')
         expr = f(x)
         curr = expr
