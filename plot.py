@@ -52,17 +52,23 @@ class Plot:
     def _plot(self,X,mx,δ,f):
         x, y = [],[]
         m1 = X.getMin()
-        MAX = 200
+        MAX = 400
         i = 0
         if not X.strictLower:
+            if m1 == -float('inf'):
+                μ = X.expectedValue()
+                if μ > 0:
+                    m1 = .4 * μ
+                else:
+                    m1 = 2.5 * μ
             m1 += δ
         if X.isDiscrete():
             δ = max(δ,1)
-
         while m1 <= mx and i <= MAX:
             x.append(m1)
             F = getattr(X,f)
             y.append(F(m1))
+            print(x[-1],y[-1])
             m1+=δ
             i+=1
         plt.plot(x, y)
@@ -71,8 +77,9 @@ class Plot:
     Compares k samples of X to the scaled pdf of X graphically
     """
     def plotSamples(self,X,k=10000):
-        r = X.simulate(k)
+        r,s = X.simulate(k)
         counts = Counter(r)
+        print(counts)
         x = []
         y = []
         for val in counts:
@@ -81,11 +88,23 @@ class Plot:
         plt.legend([f'{X} sampled {k} times'])
         plt.scatter(x,y)
         self._plot(X, 2 * X.expectedValue(), 1 if X.isDiscrete() else 0.05, 'scaledPdf')
+        plt.text(12, 10.5,s)
+        plt.xlabel(f'Value of {X}')
+        plt.ylabel(f'P[X = x] (%)')
+        plt.title(f'Sample of {X} for {k} iters vs. {"pmf" if X.isDiscrete() else "pdf"} of X (%)')
         plt.show()
         plt.close()
 
 
-
 if __name__ == '__main__':
     P = Plot()
-    P.plotSamples(Poisson(10),1000)
+    # P.plot({'binomial':([(20,.3),(20,.5),(20,.7)],20,1)},'pdf')
+    # P.plotSamples(Normal(10,10),10000)
+    P.plotPDF(Normal(10,16),25,.05)
+    # P.plotSamples(Poisson(10),10000)
+    # P.plotPDF(Erlang(3,1/3.5),1,.01)
+    # P.plot({'uniform':([(0,1)],5,1)},'moment')
+    # for i in range(1,6):
+    #     print(Uniform(0,10).moment(i))
+    X = Normal(-10,400)
+    print(X.pdf(14))
