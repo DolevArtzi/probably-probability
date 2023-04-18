@@ -1,3 +1,5 @@
+import math
+
 from RandomVariable import RandomVariable
 import random
 
@@ -44,3 +46,21 @@ class Uniform(RandomVariable):
 
     def variance(self):
         return ((self.b - self.a) ** 2)/12
+
+    def mgf(self):
+        return lambda t: (math.e ** (t * self.b) - (math.e * (t * self.a))) / (t * (self.b - self.a)) if t else 1
+    def moment(self,k):
+        c = math.pow(self.b,k)
+        s = c
+        for i in range(k-1):
+            c *= self.a/self.b
+            s+=c
+        return s/(k+1)
+
+    def _getMomentRelatedFunction(self):
+        return self.mgf()
+
+
+if __name__ == '__main__':
+    U = Uniform(0,5)
+    print(U.moment(2),U.variance())
