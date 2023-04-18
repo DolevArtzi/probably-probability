@@ -1,6 +1,7 @@
 from allRVs import *
 from util import Util
 from matplotlib import pyplot as plt
+from collections import Counter
 
 util = Util()
 class Plot:
@@ -20,7 +21,7 @@ class Plot:
         mx = max value to plot for distribution k
         δ = step value for calculation
 
-    f: the name of a function of type RandomVariable -> Real Numbers that belongs to all RVs
+    f: the name of a function of type Real --> Real that belongs to all RVs (eg pdf or cdf)
     
     together: 
         true: all plotted on same graph
@@ -66,6 +67,25 @@ class Plot:
             i+=1
         plt.plot(x, y)
 
+    """
+    Compares k samples of X to the scaled pdf of X graphically
+    """
+    def plotSamples(self,X,k=10000):
+        r = X.simulate(k)
+        counts = Counter(r)
+        x = []
+        y = []
+        for val in counts:
+            x.append(val)
+            y.append(100 * counts[val]/k)
+        plt.legend([f'{X} sampled {k} times'])
+        plt.scatter(x,y)
+        self._plot(X, 2 * X.expectedValue(), 1 if X.isDiscrete() else 0.05, 'scaledPdf')
+        plt.show()
+        plt.close()
+
+
+
 if __name__ == '__main__':
     P = Plot()
-    P.plotPDF(Geometric(.01))
+    P.plotSamples(Poisson(10),1000)
