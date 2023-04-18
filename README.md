@@ -41,5 +41,6 @@ Work with all your favorite random variables.
 * Visualization
   * Plotting
       * plot and compare and numerical function of the `RandomVariable` class with other distributions and/or other conditions of the same distribution
+      * compare sampled data to the true distribution graphically
 
   
