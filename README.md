@@ -40,6 +40,6 @@ Work with all your favorite random variables.
       * Binomials as sums of Bernoullis, etc.
 * Visualization
   * Plotting
-      * CDFs/CMFs, can compare multiple on one plot (ex. Poisson(np) vs. Bin(n,p), Bin(n,1-p) vs. Bin(n,p) etc.)
+      * plot and compare and numerical function of the `RandomVariable` class with other distributions and/or other conditions of the same distribution
 
   
