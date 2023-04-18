@@ -1,4 +1,5 @@
-# probably-probability
+# probably-probability             <img align="right" width="40" alt="Screenshot 2023-04-17 at 11 51 06 PM" src="https://user-images.githubusercontent.com/85849407/232666590-74b795b0-c038-4a27-86cf-3d1f97fd9ea5.png">
+
 Work with all your favorite random variables.
 
 ## Supported Distributions
