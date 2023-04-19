@@ -28,7 +28,7 @@ Work with, sample, visualize, combine, compare all your favorite random variable
     * Generic and recursive
   * Tail
   * Variance
-  * Higher Moments
+  * Higher Moments [work in progress]
       * Via MGF, Laplace/z-Transform, or directly, depending on the distribution
 * Simulation
   * Generate a random instance of a given distribution
@@ -41,8 +41,9 @@ Work with, sample, visualize, combine, compare all your favorite random variable
       * Binomials as sums of Bernoullis, etc.
 * Visualization
   * Plotting
-      * plot and compare and numerical function of the `RandomVariable` class with other distributions and/or other conditions of the same distribution
+      * plot and compare any numerical function of the `RandomVariable` class with other distributions and/or other conditions of the same distribution
       * compare sampled data to the true distribution graphically
+      * plot the pdf,cdf,tail etc. 
 
 ## Examples
 
