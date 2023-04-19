@@ -7,13 +7,41 @@ from collections import Counter
 
 util = Util()
 class Plot:
+    def _fillInPDFCDFTail(self,X,name,text=None,show=True):
+        print(name)
+        t = '=='
+        if name == 'cdf':
+            t = '<='
+        elif name == 'tail':
+            t = '>'
+
+        m = {
+            'xlabel' : f'Value of {X}',
+            'ylabel': f'P[X {t} x]',
+            'title': f'{name} of {X}',
+        }
+
+        if text:
+            m['text'] = text
+        self.fillInChartInfo(m)
+        if show:
+            self._showPlt()
+
+    def _showPlt(self):
+        plt.show()
+        plt.close()
+
     def plotPDF(self,X:RandomVariable,mx=None,mn=None,δ=0.05):
-        print('ok',mn)
-        self.plot({X.name:([X.params],mx if mx != None else 2 * X.expectedValue(),mn,δ)},'pdf')
+        self.plot({X.name:([X.params],mx if mx != None else 2 * X.expectedValue(),mn,δ)},'pdf',dontShow=True)
+        self._fillInPDFCDFTail(X,'pmf' if X.isDiscrete() else 'pdf')
+
+    def plotTail(self,X:RandomVariable,mx=None,mn=None,δ=0.05):
+        self.plot({X.name:([X.params],mx if mx != None else 2 * X.expectedValue(),mn,δ)},'tail',dontShow=True)
+        self._fillInPDFCDFTail(X,'tail')
 
     def plotCDF(self,X:RandomVariable,mx=None,mn=None,δ=0.05):
-        self.plot({X.name:([X.params],mx if mx != None else 2 * X.expectedValue(),mn,δ)},'cdf')
-
+        self.plot({X.name:([X.params],mx if mx != None else 2 * X.expectedValue(),mn,δ)},'cdf',dontShow=True)
+        self._fillInPDFCDFTail(X,'cdf')
 
     """
     m: a map of the form
@@ -30,28 +58,24 @@ class Plot:
         true: all plotted on same graph
         false: different graphs for each instance
     """
-    def plot(self,m,f,together=True,mn=None):
-        print('yo',mn)
+    def plot(self,m,f,together=True,dontShow=False):
         legend = []
         m = {util.rvs[k][0]:m[k] for k in m}
         for rv in m:
-            print(m)
             conditions, mx, mn, δ = m[rv]
             for c in conditions:
-                print(rv)
-                print(rv(*c))
                 X = rv(*c)
                 self._plot(X,mx,mn,δ,f)
                 if not together:
                     plt.legend([f'{X}'])
-                    plt.show()
-                    plt.close()
+                    if not dontShow:
+                        self._showPlt()
                 else:
                     legend.append(f'{X}')
         if together:
             plt.legend(legend)
-            plt.show()
-            plt.close()
+            if not dontShow:
+                self._showPlt()
 
     def _plot(self,X,mx,mn,δ,f):
         x, y = [],[]
@@ -111,35 +135,12 @@ class Plot:
             'title': f'Sample of {X} for {k} iters vs. {"pmf" if X.isDiscrete() else "pdf"} of X',
             'text': s
         }
-        print('hi',plt.xlabel)
         plt.scatter(x,y)
         self._plot(X, 2 * X.expectedValue(),None, 1 if X.isDiscrete() else 0.2, 'pdf')
         self.fillInChartInfo(m)
-        # # plt.legend([f'{X} sampled {k} times'])
-        # plt.xlabel(f'Value of {X}')
-        # plt.ylabel(f'P[X = x] (%)')
-        # plt.title(f'Sample of {X} for {k} iters vs. {"pmf" if X.isDiscrete() else "pdf"} of X (%)')
-        # # plt.text(15,0.09,'hey')
-        plt.show()
-        plt.close()
-
+        self._showPlt()
 
 if __name__ == '__main__':
     P = Plot()
-    # P.plot({'binomial':([(20,.3),(20,.5),(20,.7)],20,1)},'pdf')
-    # P.plotSamples(Normal(10,10),10000)
-
-
-
-    # P.plotPDF(Normal(0,100),30,.05)
-
-
-
-    # P.plotSamples(Binomial(20,.5),10000)
-    P.plotSamples(Normal(0,1),10000)
-    # P.plotCDF(Normal(0,9),mx=10,mn=-10,δ=.2)
-
-    # P.plotPDF(Erlang(3,1/3.5),1,.01)
-    # P.plot({'uniform':([(0,1)],5,1)},'moment')
-    # for i in range(1,6):
-    #     print(Uniform(0,10).moment(i))
+    # P.plot({'binomial':([(20,.3),(20,.5),(20,.7)],20,0,1)},'pdf')
+    P.plotTail(Exponential(.10),mx=50,mn=0)
