@@ -59,7 +59,7 @@ P[S = a] = P[2N - k = a]
 --------------------------------------------------------------------------------------------------------------------
 """
 class RandomWalk:
-    def walk(self,k,j=1,verbose=True,show=False):
+    def walk(self,k,j=1,verbose=True):
         X = Bernoulli(.5)
         r = []
         for _ in range(j):
@@ -68,30 +68,13 @@ class RandomWalk:
                 v = X.genVar()
                 s += v if v else -1
             r.append(s)
-        if verbose or show:
+        if verbose:
             if j == 1:
                 print(f'Random Walk Endpoint for {k} iters: {s}')
             else:
                 print(f'Random Walk Endpoints for {k} iters: {r}')
                 avg,var = avgVar(r)
                 print(f'Sample Average: {avg}; Sample Variance: {var}')
-            if show:
-                P = Plot()
-                m = {
-                    'mn':0,
-                    'mx':k,
-                    'f':self.walkRangeA,
-                    'prefixArgs':[k],
-                    'checkNone':True
-                }
-
-                chart = {
-                    'xlabel': f'x: Final Value of Random Walk with {k} Steps (S)',
-                    'ylabel': f'P[-x <= S <= x]',
-                    'title': f'Probability of Simple Bounded {k}-step Random Walk Ending in [-x,x] ',
-                }
-
-                P.genericPlot(fInfo=m,output=True,chart=chart)
 
     """
     P[-a <= S_k <= a], can only be directly computed via cdf/pdf of Bin for a === k mod 1
@@ -118,6 +101,34 @@ class RandomWalk:
             return N.cdf(id) - N.cdf(ic) + N.pdf(ic)
         return None
 
+    """
+    Plot P[-k <= S <= k]
+    - optionally only probabilities plot up to int(kd)
+    """
+    def plotRangeProbs(self,k,d=1):
+        P = Plot()
+        m = {
+            'mn': 0,
+            'mx': int(k*d),
+            'f': self.walkRangeA,
+            'prefixArgs': [k],
+            'checkNone': True
+        }
+
+        chart = {
+            'xlabel': f'x: Final Value of Random Walk with {k} Steps (S)',
+            'ylabel': f'P[-x <= S <= x]',
+            'title': f'Probability of Simple Bounded {k}-step Random Walk Ending in [-x,x]',
+        }
+
+        if d != 1:
+            s = chart['title']
+            t = s + f' up to S = {int(k*d)}'
+            chart['title'] = t
+
+        P.genericPlot(fInfo=m, output=True, chart=chart)
+
 if __name__ == '__main__':
     rw = RandomWalk()
-    rw.walk(30,50,show=True)
+    # rw.walk(30,50)
+    rw.plotRangeProbs(1000,d=1)
