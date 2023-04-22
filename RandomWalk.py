@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 from Bernoulli import Bernoulli
 from Binomial import Binomial
 from mathutil import avgVar
@@ -59,14 +61,19 @@ P[S = a] = P[2N - k = a]
 --------------------------------------------------------------------------------------------------------------------
 """
 class RandomWalk:
-    def walk(self,k,j=1,verbose=True):
+    def walk(self,k,j=1,verbose=True,giveVals=False):
+        if giveVals:
+            xs,ys = [],[]
         X = Bernoulli(.5)
         r = []
         for _ in range(j):
             s = 0
-            for _ in range(k):
+            for i in range(k):
                 v = X.genVar()
                 s += v if v else -1
+                if giveVals:
+                    xs.append(i)
+                    ys.append(s)
             r.append(s)
         if verbose:
             if j == 1:
@@ -75,6 +82,8 @@ class RandomWalk:
                 print(f'Random Walk Endpoints for {k} iters: {r}')
                 avg,var = avgVar(r)
                 print(f'Sample Average: {avg}; Sample Variance: {var}')
+        if giveVals:
+            return xs,ys
 
     """
     P[-a <= S_k <= a], can only be directly computed via cdf/pdf of Bin for a === k mod 1
@@ -128,7 +137,28 @@ class RandomWalk:
 
         P.genericPlot(fInfo=m, output=True, chart=chart)
 
+    """
+    Visualize num_walks simple k-bounded random walks on top of each other
+    """
+    def graphWalks(self,k,num_walks):
+        P = Plot()
+        for _ in range(num_walks):
+            xs,ys = self.walk(k,verbose=False,giveVals=True)
+            print()
+            print(xs)
+            print(ys)
+            print()
+            P.genericPlot(data=(xs,ys),wait=True)
+        chart = {
+            'xlabel': f'Time t, 0 <= t <= {k}',
+            'ylabel': f'Value of Random Walk',
+            'title': f'Time vs. Value for {num_walks} {k}-Bounded Simple Random Walks',
+        }
+        P.fillInChartInfo(chart,show=True)
+
+
 if __name__ == '__main__':
     rw = RandomWalk()
     # rw.walk(30,50)
-    rw.plotRangeProbs(1000,d=1)
+    # rw.plotRangeProbs(1000,d=1)
+    rw.graphWalks(100,180)
