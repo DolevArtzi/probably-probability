@@ -18,3 +18,15 @@ def _LIGF(s,x,d):
 
 def LIGF(s,x):
     return _LIGF(s,x,math.pow(x,s-1) * math.exp(-x))
+
+"""
+Computes the sample average and the mean sample variance of the given data
+"""
+def avgVar(data):
+    if not data:
+        return None
+    k = len(data)
+    avg = sum(data) / k
+    avg_var = sum([(x - avg) ** 2 for x in data]) / k
+    return avg,avg_var
+

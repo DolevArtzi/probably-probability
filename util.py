@@ -1,6 +1,6 @@
 import math
 from allRVs import *
-from combine import Combine
+from mathutil import avgVar
 class Util:
     def __init__(self):
         self.rvs = {'binomial':(Binomial,(20,.5)),
@@ -11,7 +11,7 @@ class Util:
                     'poisson':(Poisson,(12,)),
                     'exponential':(Exponential, (1/10,)),
                     'normal':(Normal, (0,1)),
-                    'erlang': (Erlang, (3, 1 / 3.5))
+                    'erlang': (Erlang, (3, 1 / 4))
                     }
     """
     Markov's Inequality
@@ -92,16 +92,9 @@ class Util:
             print(f'{X}: {y}')
         return y
 
-    def _avgVar(self,data):
-        if not data:
-            return None
-        k = len(data)
-        avg = sum(data) / k
-        avg_var = sum([(x - avg) ** 2 for x in data]) / k
-        return avg,avg_var
     def guess(self,data=None,k=None,target=None,verbose=False):
         if data:
-            avg,var = self._avgVar(data)
+            avg,var = avgVar(data)
             m = {}
             for rv_name in self.rvs:
                 rv, conditions = self.rvs[rv_name]
@@ -146,9 +139,12 @@ class Util:
             m[s] = self.rvs[s]
         self.iterate(RandomVariable.confirm2ndMoment, vars=m)
 
-
 u = Util()
 if __name__ == '__main__':
     # for rv_name in u.rvs:
     #     print(rv_name,u.guess(None,1000,u.rvs[rv_name][0](*(u.rvs[rv_name][1]))))
-    u.compareAll2ndMoments(['erlang','binomial','bernoulli','exponential'])
+    u.compareAll2ndMoments(['uniform'])
+    #'erlang','binomial','bernoulli','exponential'
+    # u.simAll(k=10000)
+    X = Binomial(100,.5)
+    print(u.chebyshevs(X,25))
