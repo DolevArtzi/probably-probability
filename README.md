@@ -107,4 +107,5 @@ util.simAll(k=10000)
 P = Plot()
 P.plotSamples(Poisson(10),10000)
 ```
-<img width="813" alt="Screenshot 2023-04-17 at 11 38 41 PM" src="https://user-images.githubusercontent.com/85849407/232664944-a5b0f25c-8db7-4683-ac7c-6444e37af064.png">
+<img width="813" alt="Screenshot 2023-04-22 at 3 48 35 AM" src="https://user-images.githubusercontent.com/85849407/233770676-a43a1120-111f-4e3e-8f14-7672b501f287.png">
+
