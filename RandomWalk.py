@@ -112,7 +112,7 @@ class RandomWalk:
 
     """
     Plot P[-k <= S <= k]
-    - optionally only probabilities plot up to int(kd)
+    - optionally only plot probabilities up to int(kd)
     """
     def plotRangeProbs(self,k,d=1):
         P = Plot()
@@ -135,7 +135,7 @@ class RandomWalk:
             t = s + f' up to S = {int(k*d)}'
             chart['title'] = t
 
-        P.genericPlot(fInfo=m, output=True, chart=chart)
+        P.plotGeneric(fInfo=m, output=True, chart=chart)
 
     """
     Visualize num_walks simple k-bounded random walks on top of each other
@@ -144,11 +144,7 @@ class RandomWalk:
         P = Plot()
         for _ in range(num_walks):
             xs,ys = self.walk(k,verbose=False,giveVals=True)
-            print()
-            print(xs)
-            print(ys)
-            print()
-            P.genericPlot(data=(xs,ys),wait=True)
+            P.plotGeneric(data=(xs,ys),wait=True)
         chart = {
             'xlabel': f'Time t, 0 <= t <= {k}',
             'ylabel': f'Value of Random Walk',
@@ -159,6 +155,6 @@ class RandomWalk:
 
 if __name__ == '__main__':
     rw = RandomWalk()
-    # rw.walk(30,50)
-    # rw.plotRangeProbs(1000,d=1)
-    rw.graphWalks(100,180)
+    # rw.walk(30,10000)
+    # rw.plotRangeProbs(80,.33)
+    rw.graphWalks(100,50)
