@@ -44,6 +44,13 @@ Work with, sample, visualize, combine, compare all your favorite random variable
       * plot and compare any numerical function of the `RandomVariable` class with other distributions and/or other conditions of the same distribution
       * compare sampled data to the true distribution graphically
       * plot the pdf,cdf,tail etc. 
+      * visualize the max of binomials across k trials
+* Random Walks [work in progress]
+  * Visualize 1D random walks, and some properties of them [not completely committed yet (`plot.py`)]
+* Poker [work in progress]
+  * Play a random poker hand
+  * Play k random poker hands, and obtain a bar chart of the probabilities of obtaining each outcome
+  * See the `poker` directory for another [README](https://github.com/DolevArtzi/probably-probability/tree/main/poker)
 
 ## Examples
 
