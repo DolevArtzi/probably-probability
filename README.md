@@ -109,3 +109,12 @@ P.plotSamples(Poisson(10),10000)
 ```
 <img width="813" alt="Screenshot 2023-04-22 at 3 48 35 AM" src="https://user-images.githubusercontent.com/85849407/233770676-a43a1120-111f-4e3e-8f14-7672b501f287.png">
 
+#### Random Walks
+* Visualize simple bounded 1D random walks
+```python
+
+rw = RandomWalk()
+rw.graphWalks(100,50)
+```
+<img width="611" alt="Screenshot 2023-04-30 at 9 03 46 PM" src="https://user-images.githubusercontent.com/85849407/235386663-228a76f9-7b83-4f28-b1e2-5f0ca91532a1.png">
+
