@@ -1,6 +1,7 @@
 # probably-probability             <img align='right' width="40" alt="Screenshot 2023-04-17 at 11 57 03 PM" src="https://user-images.githubusercontent.com/85849407/232667424-21c88616-f0e7-440a-b5d2-e8ccfe85fc42.png">
 
-Work with, sample, visualize, combine, compare all your favorite random variables. 
+A python project for various probability-related explorations. 
+Work with, sample, visualize, combine, compare all your favorite random variables, play poker, or take a random walk on the numberline.
 
 ## Supported Distributions
 
