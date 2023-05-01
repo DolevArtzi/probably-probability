@@ -35,7 +35,6 @@ class Eval:
 
     def blankOfAKind(self,cards,k,exclude=[],ret=False):
         c = Counter(cards)
-        # print(cards,c)
         for e in exclude:
             c[e] = 0
         for key,v in c.items():
@@ -50,23 +49,13 @@ class Eval:
 
     def evaluate(self,player,t):
         hand = player.getHand()
-        name = player.name
         if t:
             cards_on_table = t.getCardsOnTable()
             cards = cards_on_table[:]
             cards.extend(list(hand))
         else:
             cards = hand
-        # print('yo',cards)
-        # print('yo',cards)
         choices = [list(pair) for pair in itertools.combinations(cards,5)]
-        # print(len(choices),choices)
-        # for c in choices:
-        #     print(c)
-        # print(len(choices))
-        # return
-        #
-        # print()
         best = 0
         for choice in choices:
             suits = [self.getSuit(c) for c in choice]
@@ -110,5 +99,4 @@ class Eval:
 if __name__ == '__main__':
     cards = [4,4,1,4,4]
     e = Eval()
-    # print(e.evaluate([1,2,3,4,5,6,7],None))
     print(e.twoPair([3,3,1,1,1]))
