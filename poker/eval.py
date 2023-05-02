@@ -2,7 +2,7 @@ from table import Table
 from math import perm
 from collections import Counter
 import itertools
-
+from player import Player
 LESS = 0
 EQUAL = 1
 GREATER = 2
@@ -43,8 +43,10 @@ class Eval:
 
     def isStraight(self,cards):
         sortedA = sorted(cards)
-        if 1 in sortedA:
-            return sortedA == [1,2,3,4,5] or sortedA == [10,11,12,13,1]
+        # if 0 in sortedA:
+        #     print('its here. mistake made')
+        if 0 in sortedA:
+            return sortedA == [0,1,2,3,4] or sortedA == [0,9,10,11,12]
         for i in range(len(sortedA)-1):
             if sortedA[i] + 1 != sortedA[i+1]:
                 return False
@@ -94,19 +96,25 @@ class Eval:
 
     def _shortCircuitImprove(self,cards,suits,best_score,best_hand=None):
         if not best_hand:
-            best_hand = cards
-        args = [cards,suits,2,3,4]
+            best_hand = cards[:]
+        args = [cards[:],suits[:],2,3,4]
         for score in range(self.MAXSCORE,-1,-1):
-            if score <= best_score: #incomplete: will need to improve locally (within the same score). after compareHands
+            if score < best_score:
                 return best_score,best_hand
-            f,argIdxs = self._getInfoFromScore(score)
-            # print(f,print(argIdxs,[args[i] for i in argIdxs]))
-            if f(*[args[i] for i in argIdxs]):
-                return score,cards
+            else:
+                f,argIdxs = self._getInfoFromScore(score)
+                if f(*[args[i] for i in argIdxs]):
+                    if score == best_score:
+                        o = self._compareHands(cards, best_hand, best_score)
+                        return (score, cards) if o == GREATER else (best_score, best_hand)
+                    return score,cards
+
+                # print(f,print(argIdxs,[args[i] for i in argIdxs]))
+
         return best_score,best_hand
 
 
-    def evaluate(self,player,t):
+    def evaluate(self,player,t,getHand=False):
         hand = player.getHand()
         if t:
             cards_on_table = t.getCardsOnTable()
@@ -120,10 +128,13 @@ class Eval:
         for choice in choices:
             suits = [self.getSuit(c) for c in choice] #order matters between this and the next line. document that.
             realChoice = [self.getCard(c) for c in choice]
-            best_score, best_hand = self._shortCircuitImprove(realChoice,suits,best_score,best_hand)
-        yo = 'uncomment the line below me'
-        print(f'{t.printHand(player,ret=True)}: {self.strength[best_score]}')
-        return self.strength[best_score]
+            # best_score, best_hand = self._shortCircuitImprove(realChoice,suits,best_score,best_hand)
+            X = self._shortCircuitImprove(realChoice,suits,best_score,best_hand)
+            best_score = X[0]
+            best_hand = X[1]
+        if t:
+            print(f'{t.printHand(player,ret=True)}: {self.strength[best_score]}; {[x+1 for x in best_hand]}')
+        return self.strength[best_score] if not getHand else self.strength[best_score],best_hand
 
     """
     if c1 < c2: returns LESS
@@ -167,7 +178,7 @@ class Eval:
             f = self.twoPair
         else:
             f = self.fullHouse
-            (k11, k12), (k21, k22) = f(h1,retKeys=True),f(h2,retKeys=True)
+        (k11, k12), (k21, k22) = f(h1,retKeys=True),f(h2,retKeys=True)
         o1 =  self.compare(k11,k21)
         return o1 if o1 != EQUAL else self.compare(k12,k22)
 
@@ -191,8 +202,10 @@ class Eval:
 if __name__ == '__main__':
     e = Eval()
     t = Table()
-    e._printOrd(e._compareHands([5,2,3,4,7],[1,2,3,5,8],5))
-
+    # e._printOrd(e._compareHands([5,2,3,4,7],[1,2,3,5,8],5))
+    p = Player('hi')
+    p.setHand([10,11,12,13,14])
+    print(e.evaluate(p,None))
     # for c in t.cards[:10]:
     #     for c1 in t.cards[:15]:
     #         print(t.cardName(c),' ? ',t.cardName(c1))
