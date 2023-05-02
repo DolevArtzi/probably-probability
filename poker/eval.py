@@ -61,17 +61,23 @@ class Eval:
     def isStraightFlush(self,cards,suits):
         return self.isFlush(suits) and self.isStraight(cards)
 
-    def _sequence(self,cards,seq):
+    """
+    add docs. retKeys assumes len(seq) == 2
+    """
+    def _sequence(self,cards,seq,retKeys=False):
         t,k = self.blankOfAKind(cards,seq[0],ret=True)
         if t:
+            if retKeys:
+                t2,k2 = self.blankOfAKind(cards,seq[1],exclude=[k],ret=True)
+                return k,k2
             return self.blankOfAKind(cards,seq[1],exclude=[k])
         return False
 
-    def fullHouse(self,cards):
-        return self._sequence(cards,[3,2])
+    def fullHouse(self,cards,retKeys=False):
+        return self._sequence(cards,[3,2],retKeys=retKeys)
 
-    def twoPair(self,cards):
-        return self._sequence(cards,[2,2])
+    def twoPair(self,cards,retKeys=False):
+        return self._sequence(cards,[2,2],retKeys=retKeys)
 
     def blankOfAKind(self,cards,k,exclude=[],ret=False):
         c = Counter(cards)
@@ -116,7 +122,7 @@ class Eval:
             realChoice = [self.getCard(c) for c in choice]
             best_score, best_hand = self._shortCircuitImprove(realChoice,suits,best_score,best_hand)
         yo = 'uncomment the line below me'
-        # print(f'{t.printHand(player,ret=True)}: {self.strength[best_score]}')
+        print(f'{t.printHand(player,ret=True)}: {self.strength[best_score]}')
         return self.strength[best_score]
 
     """
@@ -138,12 +144,54 @@ class Eval:
             return LESS
         return GREATER
 
+    def _compareStraight(self,h1,h2):
+        return self._compMax(h1,h2)
+
+    def _compMax(self,h1,h2):
+        x1,x2 = 1 if 1 in h1 else max(h1), 1 if 1 in h2 else max(h2)
+        return self.compare(x1,x2)
+
+    def _compareKOfAKind(self,h1,h2,score):
+        if score == 1: #pair
+            k = 2
+        elif score == 3: #3oak
+            k = 3
+        elif score == 7: #4oak
+            k = 4
+        (_,val1),(_,val2) = self.blankOfAKind(h1,k,ret=True),self.blankOfAKind(h2,k,ret=True)
+        return self.compare(val1,val2)
+
+    def _compareSeq(self,h1,h2,score):
+        mx = False
+        if score == 2: #two pair
+            f = self.twoPair
+        else:
+            f = self.fullHouse
+            (k11, k12), (k21, k22) = f(h1,retKeys=True),f(h2,retKeys=True)
+        o1 =  self.compare(k11,k21)
+        return o1 if o1 != EQUAL else self.compare(k12,k22)
+
+    """
+    Compares two five card hands that both fall into the same score class
+    ex: the better between two full houses
+    
+    ORDER DEPENDENT IMPLEMENTATION (for speed)
+    """
+    def _compareHands(self,h1,h2,score):
+        if score in [0,4,5,8]: #[high card,straight,flush,straight flush] (NOTE: dependent on ordering)
+            return self._compareStraight(h1,h2)
+        elif score in [1,3,7]:
+            return self._compareKOfAKind(h1,h2,score)
+        else:
+            return self._compareSeq(h1,h2,score)
+
     def _printOrd(self,o):
         print(ord[o])
 
 if __name__ == '__main__':
     e = Eval()
     t = Table()
+    e._printOrd(e._compareHands([5,2,3,4,7],[1,2,3,5,8],5))
 
     # for c in t.cards[:10]:
     #     for c1 in t.cards[:15]:
