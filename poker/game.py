@@ -1,10 +1,11 @@
 from table import Table
 from eval import Eval
 class Game:
-    def __init__(self,n=4):
-        self.t = Table(n=n)
+    def __init__(self,n=4,t=None,statMode=False):
+        self.t = Table(n=n) if not t else t
         self.e = Eval()
-        self.start()
+        if not statMode:
+            self.start()
 
     def start(self,statMode=False):
         self.t.reset()
@@ -22,4 +23,3 @@ class Game:
 
 if __name__ == '__main__':
     g = Game()
-
