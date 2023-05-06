@@ -94,23 +94,27 @@ class Eval:
             return False,None
         return False
 
-    def _shortCircuitImprove(self,cards,suits,best_score,best_hand=None):
+    def _shortCircuitImprove(self,cards,suits,best_score,best_hand=None,report=False):
         if not best_hand:
             best_hand = cards[:]
         args = [cards[:],suits[:],2,3,4]
         for score in range(self.MAXSCORE,-1,-1):
             if score < best_score:
+                if report:
+                    return best_score,best_hand,False
                 return best_score,best_hand
             else:
                 f,argIdxs = self._getInfoFromScore(score)
                 if f(*[args[i] for i in argIdxs]):
                     if score == best_score:
                         o = self._compareHands(cards, best_hand, best_score)
+                        if report:
+                            return (score, cards,True) if o == GREATER else (best_score, best_hand,False)
                         return (score, cards) if o == GREATER else (best_score, best_hand)
-                    return score,cards
-
-                # print(f,print(argIdxs,[args[i] for i in argIdxs]))
-
+                    if report:
+                        return score,cards,True
+        if report:
+            return best_score,best_hand,False
         return best_score,best_hand
 
 
@@ -125,21 +129,31 @@ class Eval:
         choices = [list(pair) for pair in itertools.combinations(cards,5)]
         best_score = 0
         best_hand = None
-        for choice in choices:
+        best_hand_idx = 0
+        for i, choice in enumerate(choices):
             suits = [self.getSuit(c) for c in choice] #order matters between this and the next line. document that.
             realChoice = [self.getCard(c) for c in choice]
             # best_score, best_hand = self._shortCircuitImprove(realChoice,suits,best_score,best_hand)
-            X = self._shortCircuitImprove(realChoice,suits,best_score,best_hand)
-            best_score = X[0]
-            best_hand = X[1]
+            best_score, best_hand, isBetter = \
+                self._shortCircuitImprove(realChoice,suits,best_score,best_hand,report=True)
+            if isBetter:
+                best_hand_idx = i
+            # print(best_hand,best_score,best_hand_idx)
         if t:
-            print(f'{t.printHand(player,ret=True)}: {self.strength[best_score]}; {[x+1 for x in best_hand]}')
-        return self.strength[best_score] if not getHand else self.strength[best_score],best_hand
+            print(f'{t.printHand(player,ret=True)}: {self.strength[best_score]}; {t.printCards(choices[best_hand_idx],ret=True)}')
+            return self.strength[best_score] \
+                       if not getHand \
+                       else self.strength[best_score],t.printCards(choices[best_hand_idx],ret=True)
+        return self.strength[best_score] if not getHand else self.strength[best_score], best_hand
 
     """
+    Compares cards c1 and c2
+    :returns ORD
+    
     if c1 < c2: returns LESS
     elif c1 == c2: returns EQUAL
     else: GREATER
+    
     """
     def compare(self,c1,c2,get=False):
         if not get:
@@ -147,7 +161,7 @@ class Eval:
             c2 = self.getCard(c2)
         if c1 == c2:
             return EQUAL
-        if c1 == 0:
+        if c1 == 0: #check for Aces
             return GREATER
         if c2 == 0:
             return LESS
@@ -185,8 +199,9 @@ class Eval:
     """
     Compares two five card hands that both fall into the same score class
     ex: the better between two full houses
+    :returns: ORD
     
-    ORDER DEPENDENT IMPLEMENTATION (for speed)
+    (order dependent implementation for speed)
     """
     def _compareHands(self,h1,h2,score):
         if score in [0,4,5,8]: #[high card,straight,flush,straight flush] (NOTE: dependent on ordering)
@@ -199,6 +214,7 @@ class Eval:
     def _printOrd(self,o):
         print(ord[o])
 
+
 if __name__ == '__main__':
     e = Eval()
     t = Table()
@@ -206,6 +222,7 @@ if __name__ == '__main__':
     p = Player('hi')
     p.setHand([10,11,12,13,14])
     print(e.evaluate(p,None))
+    e.getCard
     # for c in t.cards[:10]:
     #     for c1 in t.cards[:15]:
     #         print(t.cardName(c),' ? ',t.cardName(c1))
