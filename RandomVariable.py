@@ -3,7 +3,6 @@ import random
 from abc import ABC, abstractmethod
 from sympy import *
 
-
 class RandomVariable(ABC):
     def __init__(self):
         self.strictLower = True
@@ -29,6 +28,7 @@ class RandomVariable(ABC):
 
     def getMax(self):
         return self.max
+
     def isDiscrete(self):
         return self.discrete
 
@@ -42,6 +42,7 @@ class RandomVariable(ABC):
     @abstractmethod
     def _valid(self,*params):
         pass
+
     def valid(self,*params):
         return len(params) != self.numParams() and self._valid(*params)
 
@@ -60,17 +61,21 @@ class RandomVariable(ABC):
     def _getMomentRelatedFunction(self):
         pass
 
-    def moment(self,k):
+    def moment(self,k,verbose=False):
         f = self._getMomentRelatedFunction()
         x = symbols('x')
         expr = f(x)
         curr = expr
+        if verbose:
+            print(curr)
         for i in range(k):
             if i == k-1:
                 curr = Derivative(curr, x)
                 return abs(curr.doit_numerically(0))
             else:
                 curr = Derivative(curr,x).doit()
+                if verbose:
+                    print(curr)
 
     """
     Probability Density Function 
@@ -112,7 +117,6 @@ class RandomVariable(ABC):
     
     Similar to Mathematica's RandomVariate[..] function.
     """
-
     @abstractmethod
     def genVar(self):
         pass
@@ -184,7 +188,9 @@ class RandomVariable(ABC):
             if output:
                 print(r[-1])
         if aggregate:
+            s = f'Mean = {(sum(r)/k):.4f}' + '\n' + (f'Sample Variance =  {(sum([(xi - μ) ** 2 for xi in r]) / (k - 1)):.4f}' if k > 1 else '')
             print(f'{self}: Average = {(sum(r)/k):.5f}' + (f'  Sample Variance =  {(sum([(xi - μ) ** 2 for xi in r]) / (k - 1)):.5f}' if k > 1 else ''))
+            return r, s
             if output:
                 print(f'Outcomes: {r}')
         return r
@@ -217,7 +223,6 @@ class RandomVariable(ABC):
     Accept-Reject method for generating CRVs
     
     [PnC pg. 234]
-    
     """
     def acceptRejectSim(self,subject,target,c):
         Y = subject.genVar()
@@ -227,3 +232,6 @@ class RandomVariable(ABC):
 
     def __str__(self):
         return f'{"".join([x.capitalize() for x in self.name.split(" ")])}({self._paramString()})'
+
+    def __hash__(self):
+        return self.name
