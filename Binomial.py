@@ -98,4 +98,4 @@ class Binomial(RandomVariable):
 
 if __name__ == '__main__':
     x = Binomial(20,0.5)
-    print(x.moment(3))
+    print(x.cdf(15))

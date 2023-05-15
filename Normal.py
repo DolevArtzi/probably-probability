@@ -16,6 +16,7 @@ class Normal(RandomVariable):
         self.params.append(μ)
         self.params.append(var)
         self.name = 'normal'
+        self.discrete = False
         self.setStrictLower(False)
 
     def pdf(self,a):
@@ -67,8 +68,6 @@ class Normal(RandomVariable):
         else:
             y = -x
         return self.μ + y * self.σ
-
-
 
 if __name__ == '__main__':
     N = Normal(0,1)

@@ -13,6 +13,7 @@ class Erlang(RandomVariable):
         self.params.append(k)
         self.params.append(λ)
         self.name = 'erlang'
+        self.discrete = False
 
     def _valid(self,*params):
         k = params[0]

@@ -11,7 +11,8 @@ class Exponential(RandomVariable):
         self.params.append(λ)
         self.name = 'exponential'
         self.eNegλ = math.exp(-λ)
-        self.setStrictLower(False) #currently doesn't affect anything
+        self.setStrictLower(False)
+        self.discrete = False
 
     def pdf(self,a):
         if a <= 0:
