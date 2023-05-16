@@ -12,8 +12,7 @@ from mpl_toolkits import mplot3d
 util = Util()
 class Plot:
     def __init__(self):
-        self.ax = plt.axes(projection='3d')
-
+        self.ax = None
 
     def _fillInPDFCDFTail(self,X,name,text=None,show=True):
         print(name)
@@ -304,6 +303,8 @@ class Plot:
         return f(*prefixArgs)
 
     def plot3dData(self,x,y,z,chart=None,show=True):
+        if not self.ax:
+            self.ax = plt.axes(projection='3d')
         self.ax.plot3D(x, y, z)
         if chart:
             self.fillInChartInfo(chart,show=show,threeD=True,wx=.9,wy=3.7)
