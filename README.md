@@ -121,8 +121,26 @@ P.plotSamples(Poisson(10),10000)
 * Visualize simple bounded 1D random walks
 ```python
 
-rw = RandomWalk()
+rw = NumberLineRW()
 rw.graphWalks(100,50)
 ```
 <img width="611" alt="Screenshot 2023-04-30 at 9 03 46 PM" src="https://user-images.githubusercontent.com/85849407/235386663-228a76f9-7b83-4f28-b1e2-5f0ca91532a1.png">
+* Visualize simple bounded 2D random walks
 
+```python
+
+rw = IntegerLatticeRW()
+rw.graphWalks2D(100,50)
+```
+
+<img width="611" alt="Screenshot 2023-05-15 at 9 43 31 PM" src="https://github.com/DolevArtzi/probably-probability/assets/85849407/cbf2fedf-64aa-4d7c-89ec-d5cf1bdb3971">
+
+* You can vary `p` as well:
+
+```python
+
+rw = IntegerLatticeRW(.7)
+rw.graphWalks2D(100,50)
+```
+
+<img width="611" alt="Screenshot 2023-05-15 at 9 50 36 PM" src="https://github.com/DolevArtzi/probably-probability/assets/85849407/97e483f9-2785-45a1-b4c7-20dfe8847130">
