@@ -20,3 +20,19 @@ class RandomWalk:
             'title': f'Time vs. Value for {num_walks} {k}-Bounded Random Walks', #pass in the title? for each type
         }
         P.fillInChartInfo(chart,show=True)
+
+    def graphWalks2D(self,k,num_walks,title=None):
+        P = Plot()
+        zs = range(k)
+        for _ in range(num_walks):
+            xs,ys = self.walk(k,verbose=False,giveVals=True)
+            P.plot3dData(zs,xs,ys,show=False)
+        chart = {
+            'ylabel': 'X-coordinate of RW',
+            'zlabel': 'Y-coordinate of RW',
+            'xlabel': f'Time t, 0 <= t <= {k}',
+            'title': f'Time vs. Value for {num_walks} {k}-Bounded 2D Random Walks',
+        }
+        if title:
+            chart['title'] = title
+        P.fillInChartInfo(chart,threeD=True, show=True)
