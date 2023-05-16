@@ -2,11 +2,14 @@ from RandomWalk import RandomWalk
 from Bernoulli import Bernoulli
 from mathutil import avgVar
 class IntegerLatticeRW(RandomWalk):
+    def __init__(self,p=.5):
+        self.p = p
+
     def walk(self,k,j=1,verbose=True,giveVals=False):
         if giveVals:
             xs,ys = [],[]
         r = []
-        X = Bernoulli(.5)
+        X = Bernoulli(self.p)
         for _ in range(j):
             s = [0,0]
             for i in range(k):
@@ -30,7 +33,7 @@ class IntegerLatticeRW(RandomWalk):
 
 
 if __name__ == '__main__':
-    z = IntegerLatticeRW()
+    z = IntegerLatticeRW(.7)
     # z.walk(1000,100)
-    z.graphWalks2D(200,30)
+    z.graphWalks2D(100,50)
 

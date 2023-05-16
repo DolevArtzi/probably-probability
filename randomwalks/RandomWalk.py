@@ -2,6 +2,9 @@ from plot import Plot
 from abc import abstractmethod
 
 class RandomWalk:
+    def __init__(self,p=.5):
+        self.p = p
+
     @abstractmethod
     def walk(self,k,j=1,verbose=True,giveVals=False):
         pass
@@ -19,9 +22,12 @@ class RandomWalk:
             'ylabel': f'Value of Random Walk',
             'title': f'Time vs. Value for {num_walks} {k}-Bounded Random Walks', #pass in the title? for each type
         }
+        if self.p != .5:
+            chart['title'] += f' (p = {self.p})'
         P.fillInChartInfo(chart,show=True)
 
     def graphWalks2D(self,k,num_walks,title=None):
+        print(f'p = {self.p}')
         P = Plot()
         zs = range(k)
         for _ in range(num_walks):
@@ -33,6 +39,6 @@ class RandomWalk:
             'xlabel': f'Time t, 0 <= t <= {k}',
             'title': f'Time vs. Value for {num_walks} {k}-Bounded 2D Random Walks',
         }
-        if title:
-            chart['title'] = title
+        if self.p != .5:
+            chart['title'] += f' (p = {self.p})'
         P.fillInChartInfo(chart,threeD=True, show=True)
