@@ -6,9 +6,15 @@ from matplotlib import pyplot as plt
 from collections import Counter
 from mathutil import avgVar
 import numpy as np
+from mpl_toolkits import mplot3d
+
 
 util = Util()
 class Plot:
+    def __init__(self):
+        self.ax = plt.axes(projection='3d')
+
+
     def _fillInPDFCDFTail(self,X,name,text=None,show=True):
         print(name)
         t = '='
@@ -125,12 +131,17 @@ class Plot:
         P.fillInChartInfo(chart,output=True)
     
     """
-    def fillInChartInfo(self,m,show=False,wx=1,wy=1):
+    def fillInChartInfo(self,m,show=False,threeD=None,wx=1,wy=1):
         x0,x1 = plt.xlim()
         y0,y1 = plt.ylim()
         x,y = .6*(x1-x0)*wx,.6*(y1-y0)*wy
         print(x0,x1,x)
         print(y0,y1,y)
+        if threeD:
+            # ax = plt.axes(projection='3d')
+            z_label = m.pop('zlabel')
+            self.ax.set_zlabel(z_label)
+            print(m,'hi')
         for k in m:
             f = getattr(plt,k)
             if k == 'text':
@@ -292,14 +303,31 @@ class Plot:
             return f(x)
         return f(*prefixArgs)
 
+    def plot3dData(self,x,y,z,chart=None,show=True):
+        self.ax.plot3D(x, y, z)
+        if chart:
+            self.fillInChartInfo(chart,show=show,threeD=True,wx=.9,wy=3.7)
+            return
+        if show:
+            self._showPlt()
+
+
 if __name__ == '__main__':
     P = Plot()
     # P.plot({'binomial':([(20,.3),(20,.5),(20,.7)],20,0,1)},'pdf')
     # P.plotTail(Exponential(.10),mx=50,mn=0)
     # P.plotPDF(Normal(0,10),20,-20)
     # P.plotPDF(Erlang(3,1/3),100,0)
-    P.plotSamples(Poisson(10),10000,25,0)
+    # P.plotSamples(Poisson(10),10000,25,0)
     # X = Normal(0,.01)
     # P.plotPDF(Binomial(20,.5))
     # print(X.pdf(0))
     # P.plotPDF(Normal(0,.0001),mx=1,mn=-1)
+    chart = {
+        'xlabel': f'iteration i',
+        'ylabel': f'Max Across Foods',
+        'zlabel': 'hello',
+        'title': f'Max Value fors for Iterations',
+    }
+    P.plot3dData([1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],show=False)
+    P.plot3dData([10,20,30,40,50,60],[10,20,30,40,50,60],[1,2,3,4,5,6],show=True)
