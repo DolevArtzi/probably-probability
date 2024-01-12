@@ -17,7 +17,7 @@ class Eval:
         For use in Eval.evaluate
         
         keys: names of the poker hand strengths
-        values: (f,argIdxs) where f is a function that determines whether a given hand has acheieved the strength
+        values: (f,argIdxs) where f is a function that determines whether a given hand has achieved the strength
                 described by the key, and argsIdxs is an ordered list of indices into the 'args'
                 list in Eval._shortCircuitImprove
         """
@@ -43,8 +43,6 @@ class Eval:
 
     def isStraight(self,cards):
         sortedA = sorted(cards)
-        # if 0 in sortedA:
-        #     print('its here. mistake made')
         if 0 in sortedA:
             return sortedA == [0,1,2,3,4] or sortedA == [0,9,10,11,12]
         for i in range(len(sortedA)-1):
@@ -133,12 +131,10 @@ class Eval:
         for i, choice in enumerate(choices):
             suits = [self.getSuit(c) for c in choice] #order matters between this and the next line. document that.
             realChoice = [self.getCard(c) for c in choice]
-            # best_score, best_hand = self._shortCircuitImprove(realChoice,suits,best_score,best_hand)
             best_score, best_hand, isBetter = \
                 self._shortCircuitImprove(realChoice,suits,best_score,best_hand,report=True)
             if isBetter:
                 best_hand_idx = i
-            # print(best_hand,best_score,best_hand_idx)
         if t:
             print(f'{t.printHand(player,ret=True)}: {self.strength[best_score]}; {t.printCards(choices[best_hand_idx],ret=True)}')
             return self.strength[best_score] \
@@ -187,7 +183,6 @@ class Eval:
         return self.compare(val1,val2)
 
     def _compareSeq(self,h1,h2,score):
-        mx = False
         if score == 2: #two pair
             f = self.twoPair
         else:
@@ -218,13 +213,6 @@ class Eval:
 if __name__ == '__main__':
     e = Eval()
     t = Table()
-    # e._printOrd(e._compareHands([5,2,3,4,7],[1,2,3,5,8],5))
     p = Player('hi')
     p.setHand([10,11,12,13,14])
     print(e.evaluate(p,None))
-    e.getCard
-    # for c in t.cards[:10]:
-    #     for c1 in t.cards[:15]:
-    #         print(t.cardName(c),' ? ',t.cardName(c1))
-    #         e._printOrd(e.compare(c,c1))
-    # print(t.cardName(t.cards[0]),t.cards[0],e.getCard(t.cards[0]))
