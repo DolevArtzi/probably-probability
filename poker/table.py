@@ -29,16 +29,18 @@ class Table:
         idx = (card-1) % 13
         return f'{self.card_names[idx]} of {self.suits[suit]}s'
 
-    def printHand(self,p,ret=False):
+    def printHand(self,p,ret=False,retCards=False):
         s = '('
         for c in p.getHand():
             s += self.cardName(c) + ', '
         s = s[:-2] + ')'
         x = f'Player {p.name}: {s}'
+        if retCards:
+            return s
         if ret:
             return x
         else:
-            print(x)
+            print(x) 
 
     def reset(self):
         for i in range(self.n):
@@ -66,7 +68,7 @@ class Table:
         r = [self.cardName(c) for c in cards]
         if ret:
             return r
-        print(r)
+        print('in table.printCards',r)
 
     def printTable(self):
         s = self.printCards(self.table,ret=True)
