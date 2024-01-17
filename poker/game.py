@@ -24,12 +24,16 @@ class Game:
                 self.t.printTable()
             if _display:
                 open_cards = self.t.printCards(self.t.table,ret=True)
+                # print('___'*20,self.t.table,open_cards,)
                 self.disp.split_display(open_cards)
             for p in [self.t.players[0]]:
                 x = self.e.evaluate(p,self.t)
+                # print(x,'X <--')
                 if _display:
                     self.disp.displayHand(self.t.printHand(p,retCards=True))
-                    self.disp.split_display(x[-1])
+                    if _print:
+                        print(f'Player {p}: ({self.e.strength[x[0]]}) {self.t.printCards(x[1],ret=True)}')
+                    self.disp.split_display(self.t.printCards(x[-1],ret=True))
         else:
             return self.e.evaluate(self.t.players[0],self.t)
 
