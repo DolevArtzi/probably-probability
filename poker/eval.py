@@ -3,6 +3,8 @@ from math import perm
 from collections import Counter
 import itertools
 from player import Player
+import random
+
 LESS = 0
 EQUAL = 1
 GREATER = 2
@@ -115,8 +117,7 @@ class Eval:
             return best_score,best_hand,False
         return best_score,best_hand
 
-
-    def evaluate(self,player,t,getHand=False):
+    def _getCombos(self,player,t):
         hand = player.getHand()
         if t:
             cards_on_table = t.getCardsOnTable()
@@ -125,6 +126,12 @@ class Eval:
         else:
             cards = hand
         choices = [list(pair) for pair in itertools.combinations(cards,5)]
+        return choices
+
+    # def _getScore(hand):
+    
+    def evaluate(self,player,t,getHand=False):
+        choices = self._getCombos(player=player,t=t)
         best_score = 0
         best_hand = None
         best_hand_idx = 0
@@ -199,6 +206,7 @@ class Eval:
     (order dependent implementation for speed)
     """
     def _compareHands(self,h1,h2,score):
+        # print('heaa',h1)
         if score in [0,4,5,8]: #[high card,straight,flush,straight flush] (NOTE: dependent on ordering)
             return self._compareStraight(h1,h2)
         elif score in [1,3,7]:
@@ -206,13 +214,86 @@ class Eval:
         else:
             return self._compareSeq(h1,h2,score)
 
+    """
+    for use in self.sortHands, assumes h1 and h2 are (hand,id) tuples
+    """
+    def _compareHandsTuple(self,h1,h2,score):
+        return self._compareHands(h1[0],h2[0],score)
+
     def _printOrd(self,o):
         print(ord[o])
+
+    def _getHandScore(self,hand):
+        suits = [self.getSuit(c) for c in hand]
+        hand = [self.getCard(c) for c in hand]
+
+        if self.isStraightFlush(hand,suits):
+            return 8
+        if self.blankOfAKind(hand,4):
+            return 7
+        if self.fullHouse(hand):
+            return 6
+        if self.isFlush(suits):
+            return 5
+        if self.isStraight(hand):
+            return 4
+        if self.blankOfAKind(hand,3):
+            return 3
+        if self.twoPair(hand):
+            return 2
+        if self.blankOfAKind(hand,2):
+            return 1 
+        return 0
+
+    def _sortHands(self,p,t):
+        c = self._getCombos(p,t)
+        m = {i:[] for i in range(self.MAXSCORE+1)}
+        id = 0
+        id_map = []
+        for h in c:
+            id_map.append(h)
+            m[self._getHandScore(h)].append((h,id))
+            id+=1
+        final = []
+        for score in range(self.MAXSCORE,-1,-1):
+            arr = m[score]
+            print('arr',arr)
+            for i in range(len(arr)):
+                hand,h_id = arr[i]
+                hand = [self.getCard(c) for c in hand]
+                arr[i] = (hand,h_id)
+            sorted_score = self._quicksort(arr,score)
+            for s in sorted_score:
+                final.append(s)
+        return final,id_map
+    
+    def sortHands(self,p,t):
+        f,id_map = self._sortHands(p,t)
+        final = []
+        for h in f:
+            raw_h = id_map[h[1]]
+            final.append(raw_h)
+        return final
+
+
+        
+
+    def _quicksort(self,a,score):
+        x = 1
+        if len(a) <= 1:
+            return a
+        pivot = random.choice(a)
+        less = [x for x in a if self._compareHandsTuple(x,pivot,score) == LESS]
+        equal = [x for x in a if self._compareHandsTuple(x,pivot,score) == EQUAL]
+        greater = [x for x in a if self._compareHandsTuple(x,pivot,score) == GREATER]
+        sorted_less, sorted_greater = self._quicksort(less,score),self._quicksort(greater,score)
+        return sorted_less + equal + sorted_greater
+
 
 
 if __name__ == '__main__':
     e = Eval()
     t = Table()
     p = Player('hi')
-    p.setHand([10,11,12,13,14])
+    p.setHand([9,10,11,1,12])
     print(e.evaluate(p,None))

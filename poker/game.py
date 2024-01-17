@@ -25,7 +25,7 @@ class Game:
             if _display:
                 open_cards = self.t.printCards(self.t.table,ret=True)
                 self.disp.split_display(open_cards)
-            for p in self.t.players:
+            for p in [self.t.players[0]]:
                 x = self.e.evaluate(p,self.t)
                 if _display:
                     self.disp.displayHand(self.t.printHand(p,retCards=True))
