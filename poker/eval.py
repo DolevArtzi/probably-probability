@@ -15,28 +15,6 @@ class Eval:
         self.strength = ['high card','pair','two pair','3 of a kind','straight','flush','full house','4 of a kind','straight flush']
         self.mapStrengths = {x:i for i,x in enumerate(self.strength)} # name --> strength map
 
-        """
-        For use in Eval.evaluate
-        
-        keys: names of the poker hand strengths
-        values: (f,argIdxs) where f is a function that determines whether a given hand has achieved the strength
-                described by the key, and argsIdxs is an ordered list of indices into the 'args'
-                list in Eval._shortCircuitImprove
-        """
-        # self.info = {'high card':(lambda x:True,[0]), #[0] is arbitrary for high card could be anything
-        #      'pair':(self.blankOfAKind,[0,2]),
-        #      'two pair':(self.twoPair,[0]),
-        #      '3 of a kind':(self.blankOfAKind,[0,3]),
-        #      'straight':(self.isStraight,[0]),
-        #     'flush':(self.isFlush,[1]),
-        #     'full house':(self.fullHouse,[0]),
-        #     '4 of a kind':(self.blankOfAKind,[0,4]),
-        #     'straight flush':(self.isStraightFlush,[0,1])
-        #     }
-        # self.MAXSCORE = 8
-
-    # def _getInfoFromScore(self,score):
-    #     return self.info[self.strength[score]]
     def getSuit(self,card):
         return (card-1)//13
 
@@ -94,29 +72,6 @@ class Eval:
         if ret:
             return False,None
         return False
-
-    # def _shortCircuitImprove(self,cards,suits,best_score,best_hand=None,report=False):
-    #     if not best_hand:
-    #         best_hand = cards[:]
-    #     args = [cards[:],suits[:],2,3,4] #2,3,4 are there for use by pair, set, and 4oak respectively
-    #     for score in range(self.MAXSCORE,-1,-1):
-    #         if score < best_score:
-    #             if report:
-    #                 return best_score,best_hand,False
-    #             return best_score,best_hand
-    #         else:
-    #             f,argIdxs = self._getInfoFromScore(score)
-    #             if f(*[args[i] for i in argIdxs]):
-    #                 if score == best_score:
-    #                     o = self._compareHands(cards, best_hand, best_score)
-    #                     if report:
-    #                         return (score, cards,True) if o == GREATER else (best_score, best_hand,False)
-    #                     return (score, cards) if o == GREATER else (best_score, best_hand)
-    #                 if report:
-    #                     return score,cards,True
-    #     if report:
-    #         return best_score,best_hand,False
-    #     return best_score,best_hand
 
     def _getCombos(self,player,t):
         hand = player.getHand()
