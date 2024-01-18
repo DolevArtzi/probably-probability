@@ -31,7 +31,6 @@ class Game:
                 x = self.e.evaluate(p,self.t)
                 if _display:
                     cards.append(self.t.printHand(p,retCards=True))
-                    # self.disp.displayHand(^,w=65)
                     print(f'Player {p}: ({self.e.strength[x[0]]})')
                     l = x[-1]
                     if _sort:
@@ -39,18 +38,10 @@ class Game:
                     else:
                         best_hand = l
                     best_hands.append(best_hand)
-                    # self.disp.split_display(self.t.printCards(best_hand,ret=True),w=70)
             for i in range(len(best_hands)):
                 best_hands[i] = self.t.printCards(best_hands[i],ret=True)
             if _display:
                 cards = [''.join((list(c)[1:])[:-1]).split(',') for c in cards]
-                # for c in cards:
-
-        #                     h = handString
-        # h = list(h)
-        # h = h[1:]
-        # h = h[:-1]
-        # l = ''.join(h).split(',')
                 self.disp.display_all_hands(cards)
                 self.disp.display_all_hands(best_hands)
         else:

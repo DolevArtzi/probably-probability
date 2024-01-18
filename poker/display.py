@@ -42,15 +42,10 @@ class TableDisplay:
         hands = [self._split(h) for h in hands]
         flat_hands = []
         labels = []
-        # black =  Image.open('./black.png')
         for i in range(len(hands)):
             for x in hands[i]:
                 flat_hands.append(x)
                 labels.append(i)
-            # flat_hands.append(black)
-            # flat_hands.append(black)
-        # flat_hands = flat_hands[:-2]
-        # _ = ipyplot.plot_images(flat_hands,img_width=75)
         _ = ipyplot.plot_class_tabs(flat_hands,labels=labels,img_width=75)
 
     def display(self,l,w=150):
