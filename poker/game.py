@@ -13,7 +13,7 @@ class Game:
         if not statMode and start:
             self.start()
 
-    def start(self,statMode=False,_print=True,_display=False):
+    def start(self,statMode=False,_print=True,_display=False,_sort=True):
         self.t.reset()
         self.t.deal()
         self.t.progress()
@@ -31,7 +31,12 @@ class Game:
                     self.disp.displayHand(self.t.printHand(p,retCards=True))
                     if _print:
                         print(f'Player {p}: ({self.e.strength[x[0]]}) {self.t.printCards(x[1],ret=True)}')
-                    self.disp.split_display(self.t.printCards(x[-1],ret=True))
+                    l = x[-1]
+                    if _sort:
+                        best_hand = self.e.sortHand(l)
+                    else:
+                        best_hand = l
+                    self.disp.split_display(self.t.printCards(best_hand,ret=True))
         else:
             return self.e.evaluate(self.t.players[0],self.t)
 

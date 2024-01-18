@@ -260,15 +260,35 @@ class Eval:
             arr[i] = (hand,h_id)
         sorted_score = self._quicksort(arr,score)
         return sorted_score,id_map
+    
+    def sortHand(self,hand:list):
+        m = {self.getCard(x):[] for x in hand}
+        for x in hand:
+            suitless = self.getCard(x)
+            m[suitless].append(x)
+        suitless_hand = [self.getCard(x) for x in hand]
+        sorted = self._quicksort(suitless_hand,-1,cards=True)
+        final = []
+        for x in sorted:
+            take_from = m[x]
+            final.append(take_from[0])
+            m[x] = m[x][1:]
+        return final
 
-    def _quicksort(self,a,score):
+    def _quicksort(self,a,score,cards=False):
         if len(a) <= 1:
             return a
         pivot = random.choice(a)
-        less = [x for x in a if self._compareHandsTuple(x,pivot,score) == LESS]
-        equal = [x for x in a if self._compareHandsTuple(x,pivot,score) == EQUAL]
-        greater = [x for x in a if self._compareHandsTuple(x,pivot,score) == GREATER]
-        sorted_less, sorted_greater = self._quicksort(less,score),self._quicksort(greater,score)
+        if cards:
+            cmp = self.compare
+            args = ()
+        else:
+            cmp = self._compareHandsTuple
+            args = (score,)
+        less = [x for x in a if cmp(x,pivot,*args) == LESS]
+        equal = [x for x in a if cmp(x,pivot,*args) == EQUAL]
+        greater = [x for x in a if cmp(x,pivot,*args) == GREATER]
+        sorted_less, sorted_greater = self._quicksort(less,score,cards=cards),self._quicksort(greater,score,cards=cards)
         return sorted_less + equal + sorted_greater
 
 if __name__ == '__main__':
