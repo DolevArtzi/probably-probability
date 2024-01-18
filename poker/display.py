@@ -6,8 +6,6 @@ class TableDisplay:
     def __init__(self):
         self.m = {}
         s = './images'
-        suits = ['club','spade','diamond','heart']
-        card_names = ['Ace','2','3','4','5','6','7','8','9','10','Jack','Queen','King']
 
         for f in os.listdir(s):
             name = f[:-4].split('_') #remove .png
@@ -26,18 +24,34 @@ class TableDisplay:
         h = h[1:]
         h = h[:-1]
         l = ''.join(h).split(',')
-        print(l)
         self.split_display(l,w=w)
         
-
-
     def split_display(self,l,w=150):
+        ll = self._split(l)
+        self.display(ll,w=w)
+
+    def _split(self,l):
         ll = []
         for s in l:
             name = s.split()
             num,suit = name[0], name[-1]
             ll.append(self.get(num,suit))
-        self.display(ll,w=w)
+        return ll
+
+    def display_all_hands(self,hands):
+        hands = [self._split(h) for h in hands]
+        flat_hands = []
+        labels = []
+        # black =  Image.open('./black.png')
+        for i in range(len(hands)):
+            for x in hands[i]:
+                flat_hands.append(x)
+                labels.append(i)
+            # flat_hands.append(black)
+            # flat_hands.append(black)
+        # flat_hands = flat_hands[:-2]
+        # _ = ipyplot.plot_images(flat_hands,img_width=75)
+        _ = ipyplot.plot_class_tabs(flat_hands,labels=labels,img_width=75)
 
     def display(self,l,w=150):
-        _ = ipyplot.plot_images(l, max_images=20, img_width=w)
+        _ = ipyplot.plot_images(l, max_images=20, img_width=w,show_url=False)
