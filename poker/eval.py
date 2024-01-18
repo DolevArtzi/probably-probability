@@ -258,10 +258,10 @@ class Eval:
             hand,h_id = arr[i]
             hand = [self.getCard(c) for c in hand]
             arr[i] = (hand,h_id)
-        sorted_score = self._quicksort(arr,score)
+        sorted_score = self._quicksort(arr,score,cards=False)
         return sorted_score,id_map
     
-    def sortHand(self,hand:list):
+    def sortHand(self,hand):
         m = {self.getCard(x):[] for x in hand}
         for x in hand:
             suitless = self.getCard(x)
@@ -275,20 +275,63 @@ class Eval:
             m[x] = m[x][1:]
         return final
 
-    def _quicksort(self,a,score,cards=False):
+    def sortHands(self,hands):
+        return self._quicksort(hands,cards=False)
+
+    """
+    Determines the winners of the round, given each player's best five card hand and that hand's score
+    :param: hands: the best hand for each player, in order
+    :param: scores: the score for each player, in order
+    :returns: list of indices into best_hands, all of whom tie for winner (or 1 winner)
+    """
+    def determineWinner(self,best_hands,scores):
+        # for i in range(len(best_hands)):
+        #     best_hands[i] = [self.getCard(c) for c in best_hands[i]]
+        m = max(scores)
+        top =  [i for i in range(len(scores)) if scores[i] == m]
+        # id_map = {i:best_hands[i] for i in top} 
+        if len(top) == 1:
+            return top
+        print(best_hands)
+        sorted_player_hands, id_map = self._sortScoreClass(best_hands[:],m)
+
+        print(sorted_player_hands)
+        # winner_idx = id_map[str(sorted_player_hands[-1][0])]
+        winner_hand = id_map[sorted_player_hands[-1][1]]
+        winner_idx = best_hands.index(winner_hand)
+        winners = []
+        for top_idx in top:
+            print(best_hands)
+            if self._compareHands([self.getCard(c) for c in best_hands[top_idx]],[self.getCard(c) for c in best_hands[winner_idx]],m) == EQUAL:
+                winners.append(top_idx)
+        return winners
+
+    '''
+    Sort the cards or hands according to 
+        - hands: sorts the hands in increasing order of strength
+        - cards: sorts the cards in increasing order of strength
+
+    :param a: a list, either of cards (0-12), of hands (0-12), or (hand,id) tuples
+    :param score: if > -1, all hands passed must be of the same score class
+    :param cards: True if cards are passed, False if hands are passed
+    '''
+    def _quicksort(self,a,score=-1,cards=True):
         if len(a) <= 1:
             return a
         pivot = random.choice(a)
-        if cards:
+        if score > -1:
+            cmp = self._compareHandsTuple
+            args = (score,)
+        elif cards:
             cmp = self.compare
             args = ()
         else:
-            cmp = self._compareHandsTuple
+            cmp = self._compareHands
             args = (score,)
         less = [x for x in a if cmp(x,pivot,*args) == LESS]
         equal = [x for x in a if cmp(x,pivot,*args) == EQUAL]
         greater = [x for x in a if cmp(x,pivot,*args) == GREATER]
-        sorted_less, sorted_greater = self._quicksort(less,score,cards=cards),self._quicksort(greater,score,cards=cards)
+        sorted_less, sorted_greater = self._quicksort(less,score=score,cards=cards),self._quicksort(greater,score=score,cards=cards)
         return sorted_less + equal + sorted_greater
 
 if __name__ == '__main__':

@@ -27,8 +27,10 @@ class Game:
                 self.disp.split_display(open_cards,w=90)
             best_hands = []
             cards = []
+            scores = []
             for p in self.t.players:
                 x = self.e.evaluate(p,self.t)
+                scores.append(x[0])
                 if _display:
                     cards.append(self.t.printHand(p,retCards=True))
                     print(f'Player {p}: ({self.e.strength[x[0]]})')
@@ -38,6 +40,12 @@ class Game:
                     else:
                         best_hand = l
                     best_hands.append(best_hand)
+            if _print:
+                winner_idxs = self.e.determineWinner(best_hands,scores)
+                if len(winner_idxs) == 1:
+                    print(f'Winner: Player {winner_idxs[0]}')
+                else:
+                    print(f'Winners: Players {winner_idxs}')
             for i in range(len(best_hands)):
                 best_hands[i] = self.t.printCards(best_hands[i],ret=True)
             if _display:
