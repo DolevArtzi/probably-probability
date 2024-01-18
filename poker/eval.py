@@ -211,7 +211,7 @@ class Eval:
             return self._compareSeq(h1,h2,score)
 
     """
-    for use in self.sortHands, assumes h1 and h2 are (hand,id) tuples
+    assumes h1 and h2 are (hand,id) tuples
     """
     def _compareHandsTuple(self,h1,h2,score):
         return self._compareHands(h1[0],h2[0],score)
@@ -273,10 +273,14 @@ class Eval:
             take_from = m[x]
             final.append(take_from[0])
             m[x] = m[x][1:]
+        z = self.getCard(final[-1])
+        if z == 0:
+            mods = [self.getCard(c) for c in final]
+            if mods == [1,2,3,4,0]:
+                last = final[-1]
+                final = final[:-1]
+                final.insert(0,last)
         return final
-
-    def sortHands(self,hands):
-        return self._quicksort(hands,cards=False)
 
     """
     Determines the winners of the round, given each player's best five card hand and that hand's score
@@ -285,23 +289,16 @@ class Eval:
     :returns: list of indices into best_hands, all of whom tie for winner (or 1 winner)
     """
     def determineWinner(self,best_hands,scores):
-        # for i in range(len(best_hands)):
-        #     best_hands[i] = [self.getCard(c) for c in best_hands[i]]
         m = max(scores)
         top =  [i for i in range(len(scores)) if scores[i] == m]
-        # id_map = {i:best_hands[i] for i in top} 
         if len(top) == 1:
             return top
-        print(best_hands)
         sorted_player_hands, id_map = self._sortScoreClass(best_hands[:],m)
 
-        print(sorted_player_hands)
-        # winner_idx = id_map[str(sorted_player_hands[-1][0])]
         winner_hand = id_map[sorted_player_hands[-1][1]]
         winner_idx = best_hands.index(winner_hand)
         winners = []
         for top_idx in top:
-            print(best_hands)
             if self._compareHands([self.getCard(c) for c in best_hands[top_idx]],[self.getCard(c) for c in best_hands[winner_idx]],m) == EQUAL:
                 winners.append(top_idx)
         return winners

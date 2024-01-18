@@ -8,7 +8,7 @@ class TableDisplay:
         s = './images'
 
         for f in os.listdir(s):
-            name = f[:-4].split('_') #remove .png
+            name = f[:-4].split('_') #remove '.png'
             num, suit = name[0], name[-1]
             self.m[(num,suit)] = Image.open(f'{s}/{f}')
 

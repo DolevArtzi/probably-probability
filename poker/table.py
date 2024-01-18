@@ -8,7 +8,7 @@ class Table:
         self.cards = list(range(1,53))
         self.suits = ['club','spade','diamond','heart']
         self.card_names = ['Ace','2','3','4','5','6','7','8','9','10','Jack','Queen','King']
-        self.active = [True for _ in range(n)]
+        self.active = [True for _ in range(n)] #removable i think
         self.round = 0
         self.last = -1
         self.table = []
@@ -24,10 +24,15 @@ class Table:
             p.setHand((x,y))
         self.last = i
 
+    """
+    cards are represented by 1-52. 1-13 are clubs, with 1 being Ace and 13 being King. The pattern continues according
+    to the ordering in self.suits
+    """
     def cardName(self,card):
         suit = (card-1)//13
         idx = (card-1) % 13
         return f'{self.card_names[idx]} of {self.suits[suit]}s'
+
 
     def printHand(self,p,ret=False,retCards=False):
         s = '('
@@ -68,7 +73,6 @@ class Table:
         r = [self.cardName(c) for c in cards]
         if ret:
             return r
-        print('in table.printCards',r)
 
     def printTable(self):
         s = self.printCards(self.table,ret=True)
