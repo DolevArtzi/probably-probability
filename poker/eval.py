@@ -73,6 +73,9 @@ class Eval:
             return False,None
         return False
 
+    '''
+    Assumes post-river
+    '''
     def _getCombos(self,player,t):
         hand = player.getHand()
         if t:
@@ -84,6 +87,121 @@ class Eval:
         choices = [list(pair) for pair in itertools.combinations(cards,5)]
         return choices
 
+        # 2 + 46
+        # 4 + 8*46
+        # 6*46
+
+        # 14*46+52 = 460 + 184 + 52 = 644 + 52 = 696
+
+    """
+    after flop:
+        - use 3 cards on table
+            - 2 in hand, 1 in hand 1 unknown, 2 unknowns
+        - use 2 cards on table
+            - 2 in hand 1 unknown, 1 in hand 2 unknown
+        - use 1 card on table
+            - 2 hand 2 unknown
+    after turn:
+        - use 4 cards on table
+            - 1 in hand, 1 unknown
+        - use 3 cards on table
+            - 2 in hand, 1 in hand 1 unknown
+        - use 2 cards on table
+            - 2 in hand 1 unknown
+    after river:
+        - use 5 cards on table
+        - use 4 cards on table
+            - 1 in hand
+        - use 3 cards on table
+            - 2 in hand
+    """
+    def _getPlayerCombos(self,player:Player,t:Table,iter=True):
+        cards_on_table = t.getCardsOnTable()[:]
+        num_unknowns = 5 - len(cards_on_table) #2 cards, and however many cards haven't been opened
+        banks = t.cards[:]
+        x,y = player.getHand()
+        banks.remove(x)
+        banks.remove(y)
+        comb = itertools.combinations
+        prod = itertools.product
+        chain = itertools.chain
+        if num_unknowns == 5:
+            return comb(banks,5)
+        elif num_unknowns == 2:
+            for c in cards_on_table:
+                banks.remove(c)
+            three_c = prod(comb(cards_on_table,3), chain(chain(comb([x,y],2),prod(comb([x,y],1),comb(banks,1))),comb(banks,2)))
+            two_c = prod(comb(cards_on_table,2), chain(prod(comb([x,y],2),comb(banks,1)),prod(comb([x,y],1),comb(banks,2))))
+            one_c = prod(comb(cards_on_table,1), prod(comb([x,y],2),comb(banks,2)))
+            ans = [three_c,two_c,one_c]
+        elif num_unknowns == 1:
+            for c in cards_on_table:
+                banks.remove(c)
+            four_c = prod(comb(cards_on_table,4),chain(comb([x,y],1),comb(banks,1)))
+            three_c = prod(comb(cards_on_table,3),chain(comb([x,y],2),prod(comb([x,y],1),comb(banks,1))))
+            two_c = prod(comb(cards_on_table,2),prod(comb([x,y],2),comb(banks,1)))
+            ans = [four_c,three_c,two_c]
+        else:
+            for c in cards_on_table:
+                banks.remove(c)
+            five_c = comb(cards_on_table,5)
+            four_c = prod(comb(cards_on_table,4),comb([x,y],1))
+            three_c = prod(comb(cards_on_table,3),comb([x,y],2))
+            ans = [five_c,four_c,three_c]
+        return ans[0],ans[1],ans[2] if iter else set(ans[0]).union(set(ans[1])).union(set(ans[2]))
+
+
+    """"
+    after the flop:
+
+    opp can use either all three on the table and two unknowns c2
+    or two from the table and three unknowns c3*3c1
+    or one from the table and four unknowns 3c1*c4
+
+    after the turn:
+
+    opp can use all four and one mystery 
+    opp can use three and two mysteries 
+    opp can use two and three mysteries 
+
+    after the river:
+    opp can use five
+    opp can use four and one mystery
+    opp can use three and two mysteries 
+
+    lists all of the possible combinations your opponents can have
+    """
+    def _getOppCombos(self,player:Player,t:Table,iter=True):
+        cards_on_table = t.getCardsOnTable()[:]
+        num_unknowns = 5 - len(cards_on_table) #2 cards, and however many cards haven't been opened
+        banks = t.cards[:]
+        x,y = player.getHand()
+        banks.remove(x)
+        banks.remove(y)
+        comb = itertools.combinations
+        if num_unknowns == 5:
+            return comb(banks,5)
+        elif num_unknowns == 2:
+            for c in cards_on_table:
+                banks.remove(c)
+            options = itertools.product(comb(cards_on_table,3),comb(banks,2)) # use all cards on table
+            options2 = itertools.product(comb(cards_on_table,2),comb(banks,3))
+            options3 = itertools.product(comb(cards_on_table,1),comb(banks,4))
+
+        elif num_unknowns == 1:
+            for c in cards_on_table:
+                banks.remove(c)
+            options = itertools.product(comb(cards_on_table,4),comb(banks,1)) # use all cards on table
+            options2 = itertools.product(comb(cards_on_table,3),comb(banks,2))
+            options3 = itertools.product(comb(cards_on_table,2),comb(banks,3))
+        else:
+            for c in cards_on_table:
+                banks.remove(c)
+            options = comb(cards_on_table,5) # use all cards on table
+            options2 = itertools.product(comb(cards_on_table,4),comb(banks,1))
+            options3 = itertools.product(comb(cards_on_table,3),comb(banks,2))
+
+        return options,options2,options3 if iter else set(options).union(set(options2)).union(set(options3))
     
     def evaluate(self,player,t):
         choices = self._getCombos(player=player,t=t)

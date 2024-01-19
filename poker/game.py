@@ -1,6 +1,9 @@
 from table import Table
 from eval import Eval
 from display import TableDisplay
+from itertools import product,chain
+
+
 '''
 Class that controls the flow of the game
 '''
@@ -14,11 +17,48 @@ class Game:
             self.start()
 
     def start(self,statMode=False,_print=True,_display=False,_sort=True):
+    
         self.t.reset()
         self.t.deal()
+        x = self.e._getOppCombos(self.t.players[0],self.t)
+        # x = self.e._getOppCombos(self.t.players[0],self.t)
+        # print(x)
+        # return
+        # print(x) 
+        # x1 = chain(chain(o1,o2),o3)
+        y = self.e._getPlayerCombos(self.t.players[0],self.t)
+        l1,l2 = len(list(x)),len(list(y))
+        print(l1,l2,l1*l2,'lens')
+        # total_hands = len(list(product(x1,x2)))
+        # print(total_hands)
+        
         self.t.progress()
+        
+        o1,o2,o3 = self.e._getOppCombos(self.t.players[0],self.t)
+        x1 = chain(chain(o1,o2),o3)
+        y1,y2,y3 = self.e._getPlayerCombos(self.t.players[0],self.t)
+        x2 = chain(chain(y1,y2),y3)
+        l1,l2 = len(list(x1)),len(list(x2))
+        print(l1,l2, l1 * l2)
+        # total_hands = len(list(product(x1,x2)))
+        
         self.t.progress()
+        
+        o1,o2,o3 = self.e._getOppCombos(self.t.players[0],self.t)
+        x1 = chain(chain(o1,o2),o3)
+        y1,y2,y3 = self.e._getPlayerCombos(self.t.players[0],self.t)
+        x2 = chain(chain(y1,y2),y3)
+        l1,l2 = len(list(x1)),len(list(x2))
+        print(l1,l2, l1 * l2)
+
         self.t.progress()
+        o1,o2,o3 = self.e._getOppCombos(self.t.players[0],self.t)
+        x1 = chain(chain(o1,o2),o3)
+        y1,y2,y3 = self.e._getPlayerCombos(self.t.players[0],self.t)
+        x2 = chain(chain(y1,y2),y3)
+        l1,l2 = len(list(x1)),len(list(x2))
+        print(l1,l2, l1 * l2)
+
         if not statMode:
             if _print:
                 self.t.printTable()
@@ -33,7 +73,7 @@ class Game:
                 scores.append(x[0])
                 if _display:
                     cards.append(self.t.printHand(p,retCards=True))
-                    print(f'Player {p}: ({self.e.strength[x[0]]})')
+                    print(f'Player {p}: {self.e.strength[x[0]]}')
                     l = x[-1]
                     if _sort:
                         best_hand = self.e.sortHand(l)
