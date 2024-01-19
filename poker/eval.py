@@ -120,14 +120,13 @@ class Eval:
         - use 3 cards on table
             - 2 in hand
     """
-    def _getPlayerCombos(self,player:Player,t:Table,iter=False):
+    def _getPlayerCombos(self,player:Player,t:Table):
         cards_on_table = t.getCardsOnTable()[:]
         num_unknowns = 5 - len(cards_on_table) #2 cards, and however many cards haven't been opened
         banks = t.cards[:]
         x,y = player.getHand()
         banks.remove(x)
         banks.remove(y)
-        print(cards_on_table,num_unknowns)
         if num_unknowns == 5:
             return comb(banks,5)
         elif num_unknowns == 2:
@@ -151,7 +150,7 @@ class Eval:
             four_c = prod(comb(cards_on_table,4),comb([x,y],1))
             three_c = prod(comb(cards_on_table,3),comb([x,y],2))
             ans = [five_c,four_c,three_c]
-        return ans[0],ans[1],ans[2] if iter else set(ans[0]).union(set(ans[1])).union(set(ans[2]))
+        return chain(chain(ans[0],ans[1]),ans[2]) #if iter else set(ans[0]).union(set(ans[1])).union(set(ans[2]))
 
 
     """"
@@ -180,26 +179,29 @@ class Eval:
     def _getOppCombos(self,player:Player,t:Table):
         cards_on_table = t.getCardsOnTable()[:]
         num_unknowns = 5 - len(cards_on_table) #2 cards, and however many cards haven't been opened
-        banks = t.cards[:]
+        bank = t.cards[:]
         x,y = player.getHand()
-        banks.remove(x)
-        banks.remove(y)
+        bank.remove(x)
+        bank.remove(y)
         if num_unknowns == 5:
-            return comb(banks,5)
+            return comb(bank,5)
         for c in cards_on_table:
-            banks.remove(c)
+            bank.remove(c)
+        banks = [cards_on_table,bank]
         if num_unknowns == 2:
-            op1,op2,op3 = self._getCombos2(cards_on_table,banks,3,2),self._getCombos2(cards_on_table,banks,2,3),self._getCombos2(cards_on_table,banks,1,4)
+            c1,c2,c3 = [3,2],[2,3],[1,4]
         elif num_unknowns == 1:
-            op1,op2,op3 = self._getCombos2(cards_on_table,banks,4,1),self._getCombos2(cards_on_table,banks,3,2),self._getCombos2(cards_on_table,banks,2,3)
+            c1,c2,c3 = [4,1],[3,2],[2,3]
         else:
-            op1,op2,op3 = comb(cards_on_table,5),self._getCombos2(cards_on_table,banks,4,1),self._getCombos2(cards_on_table,banks,3,2)
+            c2,c3 = [4,1],[3,2]
+        op1 = comb(cards_on_table,5) if num_unknowns == 0 else self._getMultiCombos(banks,c1)
+        op2,op3 = self._getMultiCombos(banks,c2),self._getMultiCombos(banks,c3)
         return chain(chain(op1,op2),op3)
     
     def _getCombos2(self,cards_on_table,bank,n1,n2):
         return prod(comb(cards_on_table,n1),comb(bank,n2))
 
-    def _getMultiCombs(self,banks,counts):
+    def _getMultiCombos(self,banks,counts):
         partial = [comb(banks[i],counts[i]) for i in range(len(banks))]
         for i in range(len(banks) - 1):
             partial[i+1] = prod(partial[i+1],partial[i])
