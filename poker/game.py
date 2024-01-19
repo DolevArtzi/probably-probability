@@ -34,29 +34,23 @@ class Game:
         
         self.t.progress()
         
-        o1,o2,o3 = self.e._getOppCombos(self.t.players[0],self.t)
-        x1 = chain(chain(o1,o2),o3)
-        y1,y2,y3 = self.e._getPlayerCombos(self.t.players[0],self.t)
-        x2 = chain(chain(y1,y2),y3)
-        l1,l2 = len(list(x1)),len(list(x2))
+        x = self.e._getOppCombos(self.t.players[0],self.t)
+        y = self.e._getPlayerCombos(self.t.players[0],self.t)
+        l1,l2 = len(list(x)),len(list(y))
         print(l1,l2, l1 * l2)
         # total_hands = len(list(product(x1,x2)))
         
         self.t.progress()
-        
-        o1,o2,o3 = self.e._getOppCombos(self.t.players[0],self.t)
-        x1 = chain(chain(o1,o2),o3)
-        y1,y2,y3 = self.e._getPlayerCombos(self.t.players[0],self.t)
-        x2 = chain(chain(y1,y2),y3)
-        l1,l2 = len(list(x1)),len(list(x2))
+        x = self.e._getOppCombos(self.t.players[0],self.t)
+        y = self.e._getPlayerCombos(self.t.players[0],self.t)
+        l1,l2 = len(list(x)),len(list(y))
         print(l1,l2, l1 * l2)
 
         self.t.progress()
-        o1,o2,o3 = self.e._getOppCombos(self.t.players[0],self.t)
-        x1 = chain(chain(o1,o2),o3)
-        y1,y2,y3 = self.e._getPlayerCombos(self.t.players[0],self.t)
-        x2 = chain(chain(y1,y2),y3)
-        l1,l2 = len(list(x1)),len(list(x2))
+        x = self.e._getOppCombos(self.t.players[0],self.t)
+        y = self.e._getPlayerCombos(self.t.players[0],self.t)
+        print(y,'hello??')
+        l1,l2 = len(list(x)),len(list(y))
         print(l1,l2, l1 * l2)
 
         if not statMode:
