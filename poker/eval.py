@@ -129,28 +129,34 @@ class Eval:
         banks.remove(y)
         if num_unknowns == 5:
             return comb(banks,5)
-        elif num_unknowns == 2:
-            for c in cards_on_table:
-                banks.remove(c)
+        for c in cards_on_table:
+            banks.remove(c)
+        if num_unknowns == 2:
+            ## x: prod []: chain, (b,c,t)k: b/c/t choose k
+            # t3 x [c2,c1 x b1,b2]
+            # t2 x [c2 x b1,c1 x b2]
+            # t1 x (c2 x b2)
             three_c = prod(comb(cards_on_table,3), chain(chain(comb([x,y],2),prod(comb([x,y],1),comb(banks,1))),comb(banks,2)))
             two_c = prod(comb(cards_on_table,2), chain(prod(comb([x,y],2),comb(banks,1)),prod(comb([x,y],1),comb(banks,2))))
             one_c = prod(comb(cards_on_table,1), prod(comb([x,y],2),comb(banks,2)))
             ans = [three_c,two_c,one_c]
         elif num_unknowns == 1:
-            for c in cards_on_table:
-                banks.remove(c)
+            # t4 x [c1,b1]
+            # t3 x [c2,c1 x b1]
+            # t2 x [c2 x b1]
             four_c = prod(comb(cards_on_table,4),chain(comb([x,y],1),comb(banks,1)))
             three_c = prod(comb(cards_on_table,3),chain(comb([x,y],2),prod(comb([x,y],1),comb(banks,1))))
             two_c = prod(comb(cards_on_table,2),prod(comb([x,y],2),comb(banks,1)))
             ans = [four_c,three_c,two_c]
         else:
-            for c in cards_on_table:
-                banks.remove(c)
+            # t5
+            # t4 x c1
+            # t3 x c2
             five_c = comb(cards_on_table,5)
             four_c = prod(comb(cards_on_table,4),comb([x,y],1))
             three_c = prod(comb(cards_on_table,3),comb([x,y],2))
             ans = [five_c,four_c,three_c]
-        return chain(chain(ans[0],ans[1]),ans[2]) #if iter else set(ans[0]).union(set(ans[1])).union(set(ans[2]))
+        return chain(chain(ans[0],ans[1]),ans[2])
 
 
     """"
@@ -189,15 +195,32 @@ class Eval:
             bank.remove(c)
         banks = [cards_on_table,bank]
         if num_unknowns == 2:
+            # cot 3 b2
+            # cot 2 b3
+            # cot 1 b4
             c1,c2,c3 = [3,2],[2,3],[1,4]
         elif num_unknowns == 1:
             c1,c2,c3 = [4,1],[3,2],[2,3]
+            # cot 4 b1
+            # cot 3 b2
+            # cot 2 b3
         else:
             c2,c3 = [4,1],[3,2]
+            # cot 5
+            # cot 4 b1
+            # cot 3 b2
         op1 = comb(cards_on_table,5) if num_unknowns == 0 else self._getMultiCombos(banks,c1)
         op2,op3 = self._getMultiCombos(banks,c2),self._getMultiCombos(banks,c3)
         return chain(chain(op1,op2),op3)
     
+    """
+    
+    :param: banks: a list of banks to select cards from 
+
+    """
+    # def _selectAndCombine(self,banks,scores,combineWith=None):
+        
+
     def _getCombos2(self,cards_on_table,bank,n1,n2):
         return prod(comb(cards_on_table,n1),comb(bank,n2))
 
@@ -207,7 +230,7 @@ class Eval:
             partial[i+1] = prod(partial[i+1],partial[i])
         return partial[-1]
 
-
+    # def _getXGetYZ(self,bank1,banks2,count1,counts2):
 
     def evaluate(self,player,t):
         choices = self._getCombos(player=player,t=t)
@@ -408,7 +431,7 @@ class Eval:
 
     """
     Determines the winners of the round, given each player's best five card hand and that hand's score
-    :param: hands: the best hand for each player, in order
+    :param: best_hands: the best hand for each player, in order
     :param: scores: the score for each player, in order
     :returns: list of indices into best_hands, all of whom tie for winner (or 1 winner)
     """
