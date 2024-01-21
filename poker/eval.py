@@ -9,6 +9,11 @@ import random
 comb = itertools.combinations
 prod = itertools.product
 chain = itertools.chain
+COMB = 'comb'
+PROD = 'prod'
+CHAIN = 'chain'
+COMBPROD = 'combprod'
+
 
 LESS = 0
 EQUAL = 1
@@ -157,6 +162,71 @@ class Eval:
             three_c = prod(comb(cards_on_table,3),comb([x,y],2))
             ans = [five_c,four_c,three_c]
         return self._combineProdIterator(chain(chain(ans[0],ans[1]),ans[2]))
+
+    def _reduce(self,f,l):
+        if len(l) == 1:
+            return l[0]
+        for i in range(len(l)-1):
+            l[i+1] = f(l[i+1],l[i])
+        return l[-1]
+
+    #support product, chaining, combinations, name is short for multichoose
+    def _mc(self,counts=None,op=PROD,*banks):
+        if op == COMBPROD: #reduce(prod,map(comb,banks))
+            # if counts is shorter than banks, will exclude the first entry of banks from the comb.
+            if len(counts) < len(banks):
+                cards_on_table = banks[0]
+                banks = banks[1:]
+            combs = [self._mc([counts[i]],b,op=COMB) for i,b in enumerate(banks)]
+            return self._reduce(prod,combs)
+        if op == PROD:
+            return prod(banks[0],banks[1])
+        if op == COMB:
+            l = [comb(b,counts[i]) for i,b in enumerate(banks)]
+        else:
+            l = banks
+        return self._reduce(chain,l)
+
+    """
+    Generate the combinations, either for 'you' or your opponent, given the cards on the table,
+    the remaining cards in the deck, and possibly a hand, if for 'you'
+
+    :param: cards_on_table: list of the cards that have been opened on the table
+    :param: bank: the remaining cards in the deck, besides the open cards and possibly 'your' hand
+    :param: counts:
+                # - if hand == None: 
+                #     [number to choose from table, number to choose from bank]
+                # - if hand == (x,y):
+                #     [number to choose from table, ]
+
+    """
+    def _generateCombos(self,cards_on_table,bank,counts,hand=None):
+        if hand:
+            for c in hand: bank.remove(c)
+        num_open = len(cards_on_table)
+        mc = self._mc
+        if num_open == 0:
+            return comb(bank,5)
+        if num_open == 3:
+            if hand:
+                r1 = mc(mc([2],hand,op=COMB),mc([1,1],hand,bank,op=COMB),mc([2],bank,op=COMB), op=CHAIN,counts=None)
+                x1 = mc(None,mc([3],cards_on_table,op=COMB),r1,op=PROD)
+                r2 = mc(mc([2],hand,op=COMB),mc([1,1],hand,bank,op=COMB),mc([2],bank,op=COMB), op=CHAIN,counts=None)
+                x2 = mc(None,mc([2],cards_on_table,op=COMB),r2,op=PROD)
+            ## x: prod []: chain, (b,c,t)k: b/c/t choose k
+            # t3 x [c2,c1 x b1,b2]
+            # t2 x [c2 x b1,c1 x b2]
+            # t1 x (c2 x b2)
+
+        #solo choose
+        #tk x [ck,b/c k x b/c k, ...]  {also '( .. )' for solo}
+
+
+
+
+
+
+
 
     def _combineProdIterator(self,*iter,l=False):
         if l:
