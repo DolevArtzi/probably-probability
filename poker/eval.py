@@ -125,10 +125,10 @@ class Eval:
         num_unknowns = 5 - len(cards_on_table) #2 cards, and however many cards haven't been opened
         banks = t.cards[:]
         x,y = player.getHand()
+        if num_unknowns == 5:
+            return list(comb(banks,5))
         banks.remove(x)
         banks.remove(y)
-        if num_unknowns == 5:
-            return comb(banks,5)
         for c in cards_on_table:
             banks.remove(c)
         if num_unknowns == 2:
@@ -156,8 +156,23 @@ class Eval:
             four_c = prod(comb(cards_on_table,4),comb([x,y],1))
             three_c = prod(comb(cards_on_table,3),comb([x,y],2))
             ans = [five_c,four_c,three_c]
-        return chain(chain(ans[0],ans[1]),ans[2])
+        return self._combineProdIterator(chain(chain(ans[0],ans[1]),ans[2]))
 
+    def _combineProdIterator(self,*iter,l=False):
+        if l:
+            return list(chain(*iter))
+        else:
+            l_iter = list(iter)
+            print(l_iter[:20],'in combine prod iter. false')
+
+#         x = [(1,2,3),(4,5,6),(7,)]
+# def z(*a):
+#     for aa in a:
+#         print(aa)
+            l_iter = [self._combineProdIterator(h,True) for h in l_iter]
+            return l_iter
+
+        
 
     """"
     after the flop:
@@ -184,13 +199,13 @@ class Eval:
     '''
     def _getOppCombos(self,player:Player,t:Table):
         cards_on_table = t.getCardsOnTable()[:]
-        num_unknowns = 5 - len(cards_on_table) #2 cards, and however many cards haven't been opened
+        num_unknowns = 5 - len(cards_on_table) # the number of cards that haven't been opened
         bank = t.cards[:]
         x,y = player.getHand()
         bank.remove(x)
         bank.remove(y)
         if num_unknowns == 5:
-            return comb(bank,5)
+            return list(comb(bank,5))
         for c in cards_on_table:
             bank.remove(c)
         banks = [cards_on_table,bank]
@@ -202,7 +217,7 @@ class Eval:
         elif num_unknowns == 1:
             c1,c2,c3 = [4,1],[3,2],[2,3]
             # cot 4 b1
-            # cot 3 b2
+            # cozt 3 b2
             # cot 2 b3
         else:
             c2,c3 = [4,1],[3,2]
@@ -211,7 +226,7 @@ class Eval:
             # cot 3 b2
         op1 = comb(cards_on_table,5) if num_unknowns == 0 else self._getMultiCombos(banks,c1)
         op2,op3 = self._getMultiCombos(banks,c2),self._getMultiCombos(banks,c3)
-        return chain(chain(op1,op2),op3)
+        return self._combineProdIterator(chain(chain(op1,op2),op3))
     
     """
     
@@ -450,6 +465,30 @@ class Eval:
                 winners.append(top_idx)
         return winners
 
+
+    def classProbabilities(self,possible_hands):
+        # pp = list(possible_hands)
+        # print(len(list(pp)),'class Prob')
+        print(len(possible_hands),'classProb.')
+        m = {i:0 for i in range(len(self.strength))}
+        tot = 0
+        
+        # for h in possible_hands[:20]:
+        #     print(h)
+        #     print(len(h))
+        print(possible_hands[:10])
+
+        for h in possible_hands:
+        #     if type(h[0]) != int:
+        #         print('hand in clss prob',h)
+            m[self._getHandScore(h)] += 1
+            tot += 1
+        if tot == 0:
+            print(possible_hands,'hello')
+        for k in m:
+            m[k] *= 100 / tot
+        return m
+        
     '''
     Sort the cards or hands according to 
         - hands: sorts the hands in increasing order of strength
