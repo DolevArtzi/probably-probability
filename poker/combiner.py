@@ -6,14 +6,16 @@ COMB = 'comb'
 PROD = 'prod'
 CHAIN = 'chain'
 COMBPROD = 'combprod'
+COMBCHAIN = 'combchain'
 from player import Player
 from table import Table
-
+f_map = {COMB:comb,PROD:prod,CHAIN:chain}
 
 class Combiner:
     def __init__(self) -> None:
         pass
-
+    
+        
 
         # 2 + 46
         # 4 + 8*46
@@ -107,7 +109,7 @@ class Combiner:
             if len(counts) < len(banks):
                 cards_on_table = banks[0]
                 banks = banks[1:]
-            combs = [self._mc([counts[i]],b,op=COMB) for i,b in enumerate(banks)]
+            combs = [self._mc([counts[i+1]],b,op=COMB) for i,b in enumerate(banks)]
             return self._reduce(prod,combs)
         if op == PROD:
             return prod(banks[0],banks[1])
@@ -116,6 +118,11 @@ class Combiner:
         else:
             l = banks
         return self._reduce(chain,l)
+
+
+
+
+    
 
     """
     Generate the combinations, either for 'you' or your opponent, given the cards on the table,
@@ -152,12 +159,6 @@ class Combiner:
         #tk x [ck,b/c k x b/c k, ...]  {also '( .. )' for solo}
 
 
-
-
-
-
-
-
     def _combineProdIterator(self,*iter,l=False):
         if l:
             return list(chain(*iter))
@@ -171,8 +172,6 @@ class Combiner:
 #         print(aa)
             l_iter = [self._combineProdIterator(h,True) for h in l_iter]
             return l_iter
-
-        
 
     """"
     after the flop:
@@ -244,3 +243,88 @@ class Combiner:
         for i in range(len(banks) - 1):
             partial[i+1] = prod(partial[i+1],partial[i])
         return partial[-1]
+
+class FNode:
+    """
+    :param: f- the function that will be applied to the children
+    :param: children- list of banks/counts that will be passed to f
+    :param: map- boolean: if true, maps f on children, otherwise reduces left to right
+    """
+    def __init__(self,f=COMB,children=[],leaf=False,_return=True):
+        self.children = children
+        self.f = f
+        self.map = self.f == COMB
+        self.leaf = leaf
+        if _return:
+            return self._treeApply()
+        # else self._
+
+    def _treeApply(self):
+        if self.leaf:
+            return self.children[0]
+        if self.f == COMBPROD:
+            children = FNode(f=COMB,children=self.children)
+            return FNode(f=PROD,children=children)
+        elif self.f == COMBCHAIN:
+            children = FNode(f=COMB,children=self.children)
+            return FNode(f=CHAIN,children=self.children)
+        self.f = f_map[self.f]
+        if self.children:
+            # if len(self.children) == 1:
+            #     return self.f(self.children[0])
+            if self.map:
+                if len(self.children) == 1:
+                    self.children[0] = self.f(*self.children)
+                for i in range(len(self.children)):
+                    self.children[i] = self.f(*self.children[i])
+            else:
+                for i in range(len(self.children) - 1):
+                    self.children[i+1] = self.f(*children[i+1],*children[i])
+            return self.children if self.map else self.children[-1]
+
+
+
+def foo():
+    cot = []
+    hand = []
+    bank = []
+    lhs = FNode(f=COMB,children=[[cot,3]])
+    rhs1= FNode(f=COMB,children=[hand,2])
+    rhs2 = FNode(f=COMBPROD,children=[[hand,1],[bank,1]])
+    rhs3 = FNode(f=COMB,children=[bank,2])
+    rhs = FNode(f=CHAIN,children=[rhs1,rhs2,rhs3])
+    x = FNode(f=PROD,children=[lhs,rhs])
+
+def foo2():
+    cot = []
+    hand = []
+    bank = []
+    lhs = FNode(f=COMB,children=[cot,2])
+    rhs = FNode(f=CHAIN,children=[FNode(f=COMBPROD,children=[[hand,2],[bank,1]]),FNode(f=COMBPROD,children=[[hand,1],[bank,2]])])
+    x = FNode(f=PROD,children=[lhs,rhs])
+
+def foo3():
+    cot = []
+    hand = []
+    bank = []
+    lhs = FNode(f=COMB,children=[cot,1])
+    rhs = FNode(f=COMBPROD,children=[[[hand,2],[bank,1]],[hand,1],[bank,2]])
+    x = FNode(f=PROD,children=[lhs,rhs])
+
+def foo4():
+    cot = []
+    hand = []
+    bank = []
+    lhs = FNode(f=COMB,children=[cot,5])
+
+
+
+
+
+    ## x: prod []: chain, (b,c,t)k: b/c/t choose k
+    # t3 x [c2,c1 x b1,b2]
+    # t2 x [c2 x b1,c1 x b2]
+    # t1 x (c2 x b2)
+    # cot 5
+    # cot 4 b1
+    # cot 3 b2
