@@ -250,72 +250,137 @@ class FNode:
     :param: children- list of banks/counts that will be passed to f
     :param: map- boolean: if true, maps f on children, otherwise reduces left to right
     """
-    def __init__(self,f=COMB,children=[],leaf=False,_return=True):
+    def __init__(self,f=COMB,children=[],leaf=False):
         self.children = children
         self.f = f
         self.map = self.f == COMB
         self.leaf = leaf
-        if _return:
-            return self._treeApply()
-        # else self._
+        # self._treeApply()
+
+    def _foo(self,*args):
+        for x in args:
+            print('x',x)
+
+
+    # if f == COMB, you can either be mapping comb on a list
 
     def _treeApply(self):
         if self.leaf:
-            return self.children[0]
+            return self#.children[0] if len(self.children) == 1 else self.children
         if self.f == COMBPROD:
-            children = FNode(f=COMB,children=self.children)
-            return FNode(f=PROD,children=children)
+            children = [FNode(f=COMB,children=x)._treeApply() for x in self.children]
+            n = FNode(f=PROD,children=children)
+            return n._treeApply()
         elif self.f == COMBCHAIN:
-            children = FNode(f=COMB,children=self.children)
-            return FNode(f=CHAIN,children=self.children)
-        self.f = f_map[self.f]
-        if self.children:
+            # children = FNode(f=COMB,children=self.children)._treeApply()
+            children = [FNode(f=COMB,children=x)._treeApply() for x in self.children]
+            n =  FNode(f=CHAIN,children=children)
+            return n._treeApply()
+        # print(self.f)
+        f = f_map[self.f]
+        # if self.children:
+        # print('a')
+        if self.map and len(self.children) == 2:
+            # print('b',self.children)
+            print(self.children,self.f)
+            return f(*self.children)
+        if self.map:
+
+            print('c')
             # if len(self.children) == 1:
-            #     return self.f(self.children[0])
-            if self.map:
-                if len(self.children) == 1:
-                    self.children[0] = self.f(*self.children)
-                for i in range(len(self.children)):
-                    self.children[i] = self.f(*self.children[i])
-            else:
-                for i in range(len(self.children) - 1):
-                    self.children[i+1] = self.f(*children[i+1],*children[i])
-            return self.children if self.map else self.children[-1]
+            #     self.children[0] = self.f(*self.children)
+            for i in range(len(self.children)):
+                print('d',i,self.children[i])
+                self.children[i] = f(*self.children[i])
+        else:
+            for i in range(len(self.children) - 1):
+                self.children[i+1] = f(self.children[i+1],self.children[i])
+            self.children = self.children if self.map else self.children[-1]
+            if self.f == PROD:
+                self.children = self._combineProdIterator(self.children)
+                # print('children',self.children)
+                # print(self.children.children,'hello')
+                # print([x.children for x in self.children.children])
+        # return self.children if self.map else self.children[-1]
+        return self.children
+
+    def _combineProdIterator(self,l):
+        # print(list(l),'aaaa')
+        # [((3, 4), (1,)), ((3, 4), (2,))] aaaa
+        res = []
+        for x in l:
+            r = []
+            for y in x:
+                r.extend(list(y))
+            # print(r,'rrrr')
+            # rr = FNode(f=CHAIN,children=r).treeApply()
+            res.append(r)
+        return res
+        print(res,'res')
+        # N = FNode(f=CHAIN,children=res).treeApply()
+        # return N.children   
+        return N      
+
+
+        # if l:
+        for z in l:
+
+            print(list(z),'zzzz')
+        # z = [chain(*z) for z in l]
+        return z
+#         else:
+#             l_iter = list(iter)
+#             print(l_iter[:20],'in combine prod iter. false')
+
+# #         x = [(1,2,3),(4,5,6),(7,)]
+# # def z(*a):
+# #     for aa in a:
+# #         print(aa)
+#             l_iter = [self._combineProdIterator(h,True) for h in l_iter]
+#             return l_iter
+
+
+    def treeApply(self):
+        return list(self._treeApply())
+        # for c in self.children:
+        #     c
+    #     root = self._treeApply()
+    #     return root.children
 
 
 
-def foo():
-    cot = []
-    hand = []
-    bank = []
-    lhs = FNode(f=COMB,children=[[cot,3]])
-    rhs1= FNode(f=COMB,children=[hand,2])
-    rhs2 = FNode(f=COMBPROD,children=[[hand,1],[bank,1]])
-    rhs3 = FNode(f=COMB,children=[bank,2])
-    rhs = FNode(f=CHAIN,children=[rhs1,rhs2,rhs3])
-    x = FNode(f=PROD,children=[lhs,rhs])
+# def foo():
+#     cot = []
+#     hand = []
+#     bank = []
+#     lhs = FNode(f=COMB,children=[[cot,3]])
+#     rhs1= FNode(f=COMB,children=[hand,2])
+#     rhs2 = FNode(f=COMBPROD,children=[[hand,1],[bank,1]])
+#     rhs3 = FNode(f=COMB,children=[bank,2])
+#     rhs = FNode(f=CHAIN,children=[rhs1,rhs2,rhs3])
+#     x = FNode(f=PROD,children=[lhs,rhs])
 
-def foo2():
-    cot = []
-    hand = []
-    bank = []
-    lhs = FNode(f=COMB,children=[cot,2])
-    rhs = FNode(f=CHAIN,children=[FNode(f=COMBPROD,children=[[hand,2],[bank,1]]),FNode(f=COMBPROD,children=[[hand,1],[bank,2]])])
-    x = FNode(f=PROD,children=[lhs,rhs])
+# def foo2():
+#     cot = []
+#     hand = []
+#     bank = []
+#     lhs = FNode(f=COMB,children=[cot,2])
+#     rhs = FNode(f=CHAIN,children=[FNode(f=COMBPROD,children=[[hand,2],[bank,1]]),FNode(f=COMBPROD,children=[[hand,1],[bank,2]])])
+#     x = FNode(f=PROD,children=[lhs,rhs])
 
-def foo3():
-    cot = []
-    hand = []
-    bank = []
-    lhs = FNode(f=COMB,children=[cot,1])
-    rhs = FNode(f=COMBPROD,children=[[[hand,2],[bank,1]],[hand,1],[bank,2]])
-    x = FNode(f=PROD,children=[lhs,rhs])
+# def foo3():
+#     cot = []
+#     hand = []
+#     bank = []
+#     lhs = FNode(f=COMB,children=[cot,1])
+#     rhs = FNode(f=COMBPROD,children=[[[hand,2],[bank,1]],[hand,1],[bank,2]])
+#     x = FNode(f=PROD,children=[lhs,rhs])
 
-def foo4():
-    cot = []
-    hand = []
-    bank = []
-    lhs = FNode(f=COMB,children=[cot,5])
+# def foo4():
+#     cot = []
+#     hand = []
+#     bank = []
+#     lhs = FNode(f=COMB,children=[[cot,5]])
 
 
 
