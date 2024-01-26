@@ -26,7 +26,6 @@ class Game:
         l2 = len(y)
         print(self.e.classProbabilities(y))
         print(l1,l2,l1*l2)
-        # print(l2,'l2')
 
         self.t.progress()
         x = self.e.c._getOppCombos(self.t.players[0],self.t)
@@ -35,8 +34,6 @@ class Game:
         l2 = len(y)
         print(self.e.classProbabilities(y))
         print(l1,l2,l1*l2)
-        # print(l2,'l2')
-
 
         self.t.progress()
 
@@ -46,17 +43,14 @@ class Game:
         l2 = len(y)
         print(self.e.classProbabilities(y))
         print(l1,l2,l1*l2)
-        # print(l2,'l2')
 
         self.t.progress()
         x = self.e.c._getOppCombos(self.t.players[0],self.t)
         y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
         l1 = len(x)
-        # print('-->',y)
         l2 = len(y)
         print(self.e.classProbabilities(y))
         print(l1,l2,l1*l2)
-        # print(l2,'l2')
         return 'thank you'
         if not statMode:
             if _print:
