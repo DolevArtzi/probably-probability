@@ -14,93 +14,180 @@ f_map = {COMB:comb,PROD:prod,CHAIN:chain}
 class Combiner:
     def __init__(self) -> None:
         pass
-    
-        
 
-        # 2 + 46
-        # 4 + 8*46
-        # 6*46
+    def _stagedCombine(self,hand,deck,n_hand,n_deck):
+        if n_hand == n_deck == 0:
+            return None
+        if n_hand == 0:
+            return FNode(f=COMB,children=[deck,n_deck]).apply()
+        elif n_deck == 0:
+            return FNode(f=COMB,children=[hand,n_hand]).apply()
+        else:
+            return FNode(f=COMBPROD,children=[[hand,n_hand],[deck,n_deck]]).apply()
+            
 
-        # 14*46+52 = 460 + 184 + 52 = 644 + 52 = 696
 
-    """
-    after flop:
-        - use 3 cards on table
-            - 2 in hand, 1 in hand 1 unknown, 2 unknowns
-        - use 2 cards on table
-            - 2 in hand 1 unknown, 1 in hand 2 unknown
-        - use 1 card on table
-            - 2 hand 2 unknown
-    after turn:
-        - use 4 cards on table
-            - 1 in hand, 1 unknown
-        - use 3 cards on table
-            - 2 in hand, 1 in hand 1 unknown
-        - use 2 cards on table
-            - 2 in hand 1 unknown
-    after river:
-        - use 5 cards on table
-        - use 4 cards on table
-            - 1 in hand
-        - use 3 cards on table
-            - 2 in hand
-    """
     def _getPlayerCombos(self,player:Player,t:Table):
         cards_on_table = t.getCardsOnTable()[:]
-        num_unknowns = 5 - len(cards_on_table) #2 cards, and however many cards haven't been opened
-        banks = t.cards[:]
+        num_open = len(cards_on_table)
+        bank = t.cards[:]
         x,y = player.getHand()
-        if num_unknowns == 5:
-            return list(comb(banks,5))
-        banks.remove(x)
-        banks.remove(y)
+        if num_open == 0:
+            return list(comb(bank,5))
+        bank.remove(x)
+        bank.remove(y)
         for c in cards_on_table:
-            banks.remove(c)
-        if num_unknowns == 2:
+            bank.remove(c)
+        
+        cots = [FNode(COMB,children=[cards_on_table,k]).apply() for k in range(num_open,num_open-3,-1)]
+        max_unknowns = min(2,5 - len(cards_on_table))
+        ans = []
+        for i,cot in enumerate(cots):
+            num_cot = num_open - i
+            rest = 5 - num_cot
+            for num_hand in range(2,-1,-1):
+                num_unknown = max(rest - num_hand,0)
+                if num_unknown <= max_unknowns and num_cot + num_hand + num_unknown == 5:
+                    print(num_open,num_cot,num_hand,num_unknown)
+                    # l = FNode(f=COMB,children=[x,num_cot]).apply()
+                    r = self._stagedCombine([x,y],bank,num_hand,num_unknown)
+                    # r = self._combineProdIterator(r)
+                    if not r:
+                        ans.append([cards_on_table])
+                    else:    
+                        ans.append(FNode(f=PROD,children=[cot,r]).apply())
+                    # print('l',x)
+                    # print('r',r)
+                    # print(type(ans),'ans',ans,num_cot,num_hand,num_unknown)
+        return FNode(f=CHAIN,children=ans).apply()
+
+# hey there
+# 3 3 2 0
+# l []
+# r [([(33, 6, 40)], 20)]
+# <class 'list'> ans [[]] 3 2 0
+
+
+    """"
+    after the flop:
+
+    opp can use either all three on the table and two unknowns c2
+    or two from the table and three unknowns c3*3c1
+    or one from the table and four unknowns 3c1*c4
+
+    after the turn:
+
+    opp can use all four and one mystery 
+    opp can use three and two mysteries 
+    opp can use two and three mysteries 
+
+    after the river:
+    opp can use five
+    opp can use four and one mystery
+    opp can use three and two mysteries 
+    """
+
+    '''
+    lists all of the possible combinations your opponents can have, depending on the stage of the hand
+    returns: iterator of 1-52 hands
+    '''
+    # def _getOppCombos(self,player:Player,t:Table):
+    #     cards_on_table = t.getCardsOnTable()[:]
+    #     num_unknowns = 5 - len(cards_on_table) # the number of cards that haven't been opened
+    #     bank = t.cards[:]
+    #     x,y = player.getHand()
+    #     bank.remove(x)
+    #     bank.remove(y)
+    #     if num_unknowns == 5:
+    #         return list(comb(bank,5))
+    #     for c in cards_on_table:
+    #         bank.remove(c)
+    #     banks = [cards_on_table,bank]
+    #     if num_unknowns == 2:
+    #         # cot 3 b2
+    #         # cot 2 b3
+    #         # cot 1 b4
+    #         c1,c2,c3 = [3,2],[2,3],[1,4]
+    #     elif num_unknowns == 1:
+    #         c1,c2,c3 = [4,1],[3,2],[2,3]
+    #         # cot 4 b1
+    #         # cozt 3 b2
+    #         # cot 2 b3
+    #     else:
+    #         c2,c3 = [4,1],[3,2]
+    #         # cot 5
+    #         # cot 4 b1
+    #         # cot 3 b2
+    #     op1 = comb(cards_on_table,5) if num_unknowns == 0 else self._getMultiCombos(banks,c1)
+    #     op2,op3 = self._getMultiCombos(banks,c2),self._getMultiCombos(banks,c3)
+    #     return self._combineProdIterator(chain(chain(op1,op2),op3))
+    
+
+    def _getOppCombos(self,player:Player,t:Table):
+        cards_on_table = t.getCardsOnTable()[:]
+        num_open =  len(cards_on_table) 
+        hand = player.getHand()
+        bank = t.cards[:]
+        for h in hand:
+            bank.remove(h)
+        if num_open == 0:
+            return list(comb(bank,5))
+        for c in cards_on_table:
+            bank.remove(c)
+        cots = [FNode(COMB,children=[cards_on_table,k]).apply() for k in range(num_open,num_open-3,-1)]
+        ans = []
+        for i,x in enumerate(cots):
+            num_cot = num_open - i
+            rest = 5 - num_cot
+            r = FNode(f=COMB,children=[bank,rest]).apply()
+            ans.append(FNode(f=PROD,children=[x,r]).apply())
+            # ans.append(FNode(f=COMBPROD,children=[[x,num_cot],[bank,rest]]).apply())
+            # for num_hand in range(2,-1,-1):
+            #     # num_unknown = rest - num_hand
+            #     l = FNode(f=COMBPROD,children=[[x,num_cot],[bank,rest]]).apply()
+            #     ans.append(l)
+                # ans.append(self._stagedCombine(cots,[],bank,num_cot,0,num_unknown))
+        return FNode(f=CHAIN,children=ans).apply()
+
+
+
+
+            # return 0
             ## x: prod []: chain, (b,c,t)k: b/c/t choose k
             # t3 x [c2,c1 x b1,b2]
             # t2 x [c2 x b1,c1 x b2]
             # t1 x (c2 x b2)
-            three_c = prod(comb(cards_on_table,3), chain(chain(comb([x,y],2),prod(comb([x,y],1),comb(banks,1))),comb(banks,2)))
-            two_c = prod(comb(cards_on_table,2), chain(prod(comb([x,y],2),comb(banks,1)),prod(comb([x,y],1),comb(banks,2))))
-            one_c = prod(comb(cards_on_table,1), prod(comb([x,y],2),comb(banks,2)))
-            ans = [three_c,two_c,one_c]
-        elif num_unknowns == 1:
-            # t4 x [c1,b1]
-            # t3 x [c2,c1 x b1]
-            # t2 x [c2 x b1]
-            four_c = prod(comb(cards_on_table,4),chain(comb([x,y],1),comb(banks,1)))
-            three_c = prod(comb(cards_on_table,3),chain(comb([x,y],2),prod(comb([x,y],1),comb(banks,1))))
-            two_c = prod(comb(cards_on_table,2),prod(comb([x,y],2),comb(banks,1)))
-            ans = [four_c,three_c,two_c]
-        else:
-            # t5
-            # t4 x c1
-            # t3 x c2
-            five_c = comb(cards_on_table,5)
-            four_c = prod(comb(cards_on_table,4),comb([x,y],1))
-            three_c = prod(comb(cards_on_table,3),comb([x,y],2))
-            ans = [five_c,four_c,three_c]
-        return self._combineProdIterator(chain(chain(ans[0],ans[1]),ans[2]))
 
-        # chain prods 
-        #     each prod is between a comb and a comb or a comb and a chain or a comb and a prod
-                #the chain can be longer than two, and includes combs and combprods
+            
 
+        #     three_c = prod(comb(cards_on_table,3), chain(chain(comb([x,y],2),prod(comb([x,y],1),comb(banks,1))),comb(banks,2)))
+        #     two_c = prod(comb(cards_on_table,2), chain(prod(comb([x,y],2),comb(banks,1)),prod(comb([x,y],1),comb(banks,2))))
+        #     one_c = prod(comb(cards_on_table,1), prod(comb([x,y],2),comb(banks,2)))
+        #     ans = [three_c,two_c,one_c]
+        # elif num_open == 4:
+        #     # t4 x [c1,b1]
+        #     # t3 x [c2,c1 x b1]
+        #     # t2 x [c2 x b1]
+        #     four_c = prod(comb(cards_on_table,4),chain(comb([x,y],1),comb(banks,1)))
+        #     three_c = prod(comb(cards_on_table,3),chain(comb([x,y],2),prod(comb([x,y],1),comb(banks,1))))
+        #     two_c = prod(comb(cards_on_table,2),prod(comb([x,y],2),comb(banks,1)))
+        #     ans = [four_c,three_c,two_c]
+        # else:
+        #     # t5
+        #     # t4 x c1
+        #     # t3 x c2
+        #     five_c = comb(cards_on_table,5)
+        #     four_c = prod(comb(cards_on_table,4),comb([x,y],1))
+        #     three_c = prod(comb(cards_on_table,3),comb([x,y],2))
+        #     ans = [five_c,four_c,three_c]
+        # return self._combineProdIterator(chain(chain(ans[0],ans[1]),ans[2]))
+        
     def _reduce(self,f,l):
         if len(l) == 1:
             return l[0]
         for i in range(len(l)-1):
             l[i+1] = f(l[i+1],l[i])
         return l[-1]
-
-    # def _compose(self,*fs,args=None):
-    #     fs = fs[::-1]
-    #     r = args
-    #     for f in fs:
-    #         r = self._apply(f,r)
-    #     return r
-        
 
     #support product, chaining, combinations, name is short for multichoose
     def _mc(self,counts=None,op=PROD,*banks):
@@ -173,67 +260,12 @@ class Combiner:
             l_iter = [self._combineProdIterator(h,True) for h in l_iter]
             return l_iter
 
-    """"
-    after the flop:
 
-    opp can use either all three on the table and two unknowns c2
-    or two from the table and three unknowns c3*3c1
-    or one from the table and four unknowns 3c1*c4
-
-    after the turn:
-
-    opp can use all four and one mystery 
-    opp can use three and two mysteries 
-    opp can use two and three mysteries 
-
-    after the river:
-    opp can use five
-    opp can use four and one mystery
-    opp can use three and two mysteries 
-    """
-
-    '''
-    lists all of the possible combinations your opponents can have, depending on the stage of the hand
-    returns: iterator of 1-52 hands
-    '''
-    def _getOppCombos(self,player:Player,t:Table):
-        cards_on_table = t.getCardsOnTable()[:]
-        num_unknowns = 5 - len(cards_on_table) # the number of cards that haven't been opened
-        bank = t.cards[:]
-        x,y = player.getHand()
-        bank.remove(x)
-        bank.remove(y)
-        if num_unknowns == 5:
-            return list(comb(bank,5))
-        for c in cards_on_table:
-            bank.remove(c)
-        banks = [cards_on_table,bank]
-        if num_unknowns == 2:
-            # cot 3 b2
-            # cot 2 b3
-            # cot 1 b4
-            c1,c2,c3 = [3,2],[2,3],[1,4]
-        elif num_unknowns == 1:
-            c1,c2,c3 = [4,1],[3,2],[2,3]
-            # cot 4 b1
-            # cozt 3 b2
-            # cot 2 b3
-        else:
-            c2,c3 = [4,1],[3,2]
-            # cot 5
-            # cot 4 b1
-            # cot 3 b2
-        op1 = comb(cards_on_table,5) if num_unknowns == 0 else self._getMultiCombos(banks,c1)
-        op2,op3 = self._getMultiCombos(banks,c2),self._getMultiCombos(banks,c3)
-        return self._combineProdIterator(chain(chain(op1,op2),op3))
-    
     """
     
     :param: banks: a list of banks to select cards from 
 
     """
-    # def _selectAndCombine(self,banks,scores,combineWith=None):
-        
 
     def _getCombos2(self,cards_on_table,bank,n1,n2):
         return prod(comb(cards_on_table,n1),comb(bank,n2))
@@ -250,103 +282,52 @@ class FNode:
     :param: children- list of banks/counts that will be passed to f
     :param: map- boolean: if true, maps f on children, otherwise reduces left to right
     """
-    def __init__(self,f=COMB,children=[],leaf=False):
+    def __init__(self,f=COMB,children=[]):
         self.children = children
         self.f = f
         self.map = self.f == COMB
-        self.leaf = leaf
-        # self._treeApply()
 
     def _foo(self,*args):
         for x in args:
             print('x',x)
 
-
-    # if f == COMB, you can either be mapping comb on a list
-
     def _treeApply(self):
-        if self.leaf:
-            return self#.children[0] if len(self.children) == 1 else self.children
         if self.f == COMBPROD:
             children = [FNode(f=COMB,children=x)._treeApply() for x in self.children]
             n = FNode(f=PROD,children=children)
             return n._treeApply()
         elif self.f == COMBCHAIN:
-            # children = FNode(f=COMB,children=self.children)._treeApply()
             children = [FNode(f=COMB,children=x)._treeApply() for x in self.children]
             n =  FNode(f=CHAIN,children=children)
             return n._treeApply()
-        # print(self.f)
         f = f_map[self.f]
-        # if self.children:
-        # print('a')
         if self.map and len(self.children) == 2:
-            # print('b',self.children)
-            print(self.children,self.f)
             return f(*self.children)
         if self.map:
-
-            print('c')
-            # if len(self.children) == 1:
-            #     self.children[0] = self.f(*self.children)
             for i in range(len(self.children)):
-                print('d',i,self.children[i])
                 self.children[i] = f(*self.children[i])
         else:
             for i in range(len(self.children) - 1):
-                self.children[i+1] = f(self.children[i+1],self.children[i])
+                self.children[i+1] = list(f(self.children[i],self.children[i+1]))
+                # if self.f == PROD:
+                #     print('aaaaaaaa',self.children[i+1])
             self.children = self.children if self.map else self.children[-1]
             if self.f == PROD:
                 self.children = self._combineProdIterator(self.children)
-                # print('children',self.children)
-                # print(self.children.children,'hello')
-                # print([x.children for x in self.children.children])
-        # return self.children if self.map else self.children[-1]
         return self.children
 
     def _combineProdIterator(self,l):
-        # print(list(l),'aaaa')
-        # [((3, 4), (1,)), ((3, 4), (2,))] aaaa
         res = []
         for x in l:
             r = []
             for y in x:
                 r.extend(list(y))
-            # print(r,'rrrr')
-            # rr = FNode(f=CHAIN,children=r).treeApply()
             res.append(r)
         return res
-        print(res,'res')
-        # N = FNode(f=CHAIN,children=res).treeApply()
-        # return N.children   
-        return N      
 
 
-        # if l:
-        for z in l:
-
-            print(list(z),'zzzz')
-        # z = [chain(*z) for z in l]
-        return z
-#         else:
-#             l_iter = list(iter)
-#             print(l_iter[:20],'in combine prod iter. false')
-
-# #         x = [(1,2,3),(4,5,6),(7,)]
-# # def z(*a):
-# #     for aa in a:
-# #         print(aa)
-#             l_iter = [self._combineProdIterator(h,True) for h in l_iter]
-#             return l_iter
-
-
-    def treeApply(self):
+    def apply(self):
         return list(self._treeApply())
-        # for c in self.children:
-        #     c
-    #     root = self._treeApply()
-    #     return root.children
-
 
 
 # def foo():
