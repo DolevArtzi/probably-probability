@@ -32,8 +32,12 @@ class Game:
         y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
         l1 = len(x)
         l2 = len(y)
-        print(self.e.classProbabilities(y))
-        print(l1,l2,l1*l2)
+        # print(self.e.classProbabilities2(y))
+        best_score, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
+        print(f'Best Guaranteed: {best_score}')
+        m = {k:f'{probs[k]:.3f}' for k in probs}
+        print(f'Prob. of Improvement: {m}')
+        # print(l1,l2,l1*l2)
 
         self.t.progress()
 
@@ -41,16 +45,22 @@ class Game:
         y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
         l1 = len(x)
         l2 = len(y)
-        print(self.e.classProbabilities(y))
-        print(l1,l2,l1*l2)
+        # print(self.e.classProbabilities2(y))
+        best_score, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
+        print(f'Best Guaranteed: {best_score}')
+        m = {k:f'{probs[k]:.3f}' for k in probs}
+        print(f'Prob. of Improvement: {m}')
+        # print(l1,l2,l1*l2)
 
         self.t.progress()
         x = self.e.c._getOppCombos(self.t.players[0],self.t)
         y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
         l1 = len(x)
         l2 = len(y)
-        print(self.e.classProbabilities(y))
-        print(l1,l2,l1*l2)
+        # print(self.e.classProbabilities2(y))
+        # best_score, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
+        # print(f'Best Score Guaranteed: {best_score}')        
+        # print(l1,l2,l1*l2)
         if not statMode:
             if _print:
                 self.t.printTable()

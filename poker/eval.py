@@ -100,8 +100,8 @@ class Eval:
         choices = [list(pair) for pair in comb(cards,5)]
         return choices
         
-    def evaluate(self,player,t):
-        choices = self._getCombos(player=player,t=t)
+    def evaluate(self,player,t,choices=None):
+        choices = choices if choices else self._getCombos(player=player,t=t)
         scores = [(hand,self._getHandScore(hand)) for hand in choices]
         max_score = max(scores,key=lambda x:x[1])[1]
         top = [hand for (hand,score) in scores if score == max_score]
@@ -213,6 +213,9 @@ class Eval:
     """
     Compares two five card hands that both fall into the same score class
     ex: the better between two full houses
+
+    NOTE: expects the hands to be 0-12, not 1-52
+
     :returns: ORD
     """
     def _compareHands(self,h1,h2,score):
@@ -277,7 +280,6 @@ class Eval:
                 winners.append(top_idx)
         return winners
 
-
     def classProbabilities(self,possible_hands):
         print(len(possible_hands),'classProb.')
         m = {i:0 for i in range(len(self.strength))}
@@ -290,6 +292,37 @@ class Eval:
         for k in m:
             m[k] *= 100 / tot
         return m
+    
+    def probOfImprovement(self,possible_hands,p:Player,t:Table):
+        # print(len(possible_hands),'classProb.2')
+        m = {i:0 for i in range(len(self.strength))}
+        tot = 0
+        guaranteed_hands = self.c.getGuaranteedHands(p,t)
+
+        best_score,best_hand = self.evaluate(-1,-1,choices=guaranteed_hands[:])
+        if len(t.getCardsOnTable()) == 5:
+            return self.strength[best_score], {}
+        best_hand = [self.getCard(c) for c in best_hand]
+        for h in possible_hands:
+            score = self._getHandScore(h)
+            if score > best_score:
+                m[score] += 1
+                tot += 1
+            elif score == best_score:
+                if self._compareHands(best_hand,[self.getCard(c) for c in h],score) == LESS:
+                    m[score] += 1
+                    tot += 1
+        for k in m:
+            m[k] *= 100 / tot
+        return self.strength[best_score], {self.strength[k]:m[k] for k in m if m[k] > 0}
+
+    # def classProb2(self,)
+
+    # def bestSoFar(self,possible_hands):
+    #     best_score,best_hand = self.evaluate(-1,-1,choices=possible_hands)
+    #     return best_score,best_score
+
+
 
 if __name__ == '__main__':
     e = Eval()

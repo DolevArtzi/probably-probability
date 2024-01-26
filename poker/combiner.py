@@ -73,6 +73,23 @@ class Combiner:
             ans.append(FNode(f=PROD,children=[x,r]).apply())
         return FNode(f=CHAIN,children=ans).apply()
 
+
+    """
+    Returns a list of the possible hands guaranteed so far for player `p` given 
+    table `t`
+
+    """
+    def getGuaranteedHands(self,p:Player,t:Table):
+        cot = t.getCardsOnTable()[:]
+        h = p.getHand()
+        possible_hands = []
+        for num_cot in range(len(cot),2,-1): #num_cot can be between len(cot) and 3
+            if num_cot == 5:
+                possible_hands.append(FNode(f=COMB,children=[cot,num_cot]).apply())
+            else:
+                possible_hands.append(FNode(f=COMBPROD,children=[[cot,num_cot],[h,5 - num_cot]]).apply())
+        return FNode(f=CHAIN,children=possible_hands).apply()
+
 class FNode:
     """
     :param: f- the function that will be applied to the children
