@@ -297,6 +297,7 @@ class Eval:
         # print(len(possible_hands),'classProb.2')
         m = {i:0 for i in range(len(self.strength))}
         tot = 0
+        improvements = 0
         guaranteed_hands = self.c.getGuaranteedHands(p,t)
 
         best_score,best_hand = self.evaluate(-1,-1,choices=guaranteed_hands[:])
@@ -304,17 +305,23 @@ class Eval:
             return self.strength[best_score], {}
         best_hand = [self.getCard(c) for c in best_hand]
         for h in possible_hands:
+            tot += 1
             score = self._getHandScore(h)
             if score > best_score:
                 m[score] += 1
-                tot += 1
+                improvements += 1
             elif score == best_score:
                 if self._compareHands(best_hand,[self.getCard(c) for c in h],score) == LESS:
                     m[score] += 1
-                    tot += 1
+                    improvements += 1
+        tot -= 1 # don't count the current best hand
+        if tot == 0:
+            # return self.strength[best_score], {self.strength[k]:m[k] for k in m if m[k] > 0} 
+            print('oh no! tot is 0')
         for k in m:
-            m[k] *= 100 / tot
-        return self.strength[best_score], {self.strength[k]:m[k] for k in m if m[k] > 0}
+            m[k] *= 100 / tot #probability of improving to strength k 
+        prob_of_improvement = 100 * improvements / tot
+        return self.strength[best_score], prob_of_improvement, {self.strength[k]:m[k] for k in m if m[k] > 0}
 
     # def classProb2(self,)
 

@@ -33,10 +33,10 @@ class Game:
         l1 = len(x)
         l2 = len(y)
         # print(self.e.classProbabilities2(y))
-        best_score, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
-        print(f'Best Guaranteed: {best_score}')
+        best_score, p, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
+        print(f'Best Guaranteed: {best_score}, Prob. of Improving: {p}')
         m = {k:f'{probs[k]:.3f}' for k in probs}
-        print(f'Prob. of Improvement: {m}')
+        print(f'Prob. of Improving to Score Class: {m}')
         # print(l1,l2,l1*l2)
 
         self.t.progress()
@@ -46,10 +46,10 @@ class Game:
         l1 = len(x)
         l2 = len(y)
         # print(self.e.classProbabilities2(y))
-        best_score, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
-        print(f'Best Guaranteed: {best_score}')
+        best_score, p, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
+        print(f'Best Guaranteed: {best_score}, Prob. of Improving: {p}')
         m = {k:f'{probs[k]:.3f}' for k in probs}
-        print(f'Prob. of Improvement: {m}')
+        print(f'Prob. of Improving to Score Class: {m}')
         # print(l1,l2,l1*l2)
 
         self.t.progress()
