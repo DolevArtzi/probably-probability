@@ -20,12 +20,12 @@ class Game:
     
         self.t.reset()
         self.t.deal()
-        x = self.e.c._getOppCombos(self.t.players[0],self.t)
-        y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
-        l1 = len(x)
-        l2 = len(y)
-        print(self.e.classProbabilities(y))
-        print(l1,l2,l1*l2)
+        # x = self.e.c._getOppCombos(self.t.players[0],self.t)
+        # y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
+        # l1 = len(x)
+        # l2 = len(y)
+        # print(self.e.classProbabilities(y))
+        # print(l1,l2,l1*l2)
 
         self.t.progress()
         x = self.e.c._getOppCombos(self.t.players[0],self.t)
@@ -51,7 +51,6 @@ class Game:
         l2 = len(y)
         print(self.e.classProbabilities(y))
         print(l1,l2,l1*l2)
-        return 'thank you'
         if not statMode:
             if _print:
                 self.t.printTable()
@@ -69,7 +68,7 @@ class Game:
                     print(f'Player {p}: {self.e.strength[x[0]]}')
                     l = x[-1]
                     if _sort:
-                        best_hand = self.e.sortHand(l)
+                        best_hand = self.e.s.sortHand(l)
                     else:
                         best_hand = l
                     best_hands.append(best_hand)

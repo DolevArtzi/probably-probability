@@ -4,11 +4,12 @@ EQUAL = 1
 GREATER = 2
 ord = {0:'LESS',1:'EQUAL',2:'GREATER'}
 import random
-# from
 
 class Sorter:
-    def __init__(self) -> None:
-        pass
+    def __init__(self,cmp_fxs) -> None:
+        self.cmp_fxs = cmp_fxs
+
+
     def getSuit(self,card):
         return (card-1)//13
 
@@ -50,13 +51,13 @@ class Sorter:
             return a
         pivot = random.choice(a)
         if score > -1:
-            cmp = self._compareHandsTuple # need comparator as well
+            cmp = self.cmp_fxs[0] # not the cleanest way to do this...
             args = (score,)
         elif cards:
-            cmp = self.compare
+            cmp = self.cmp_fxs[1]
             args = ()
         else:
-            cmp = self._compareHands
+            cmp = self.cmp_fxs[2]
             args = (score,)
         less = [x for x in a if cmp(x,pivot,*args) == LESS]
         equal = [x for x in a if cmp(x,pivot,*args) == EQUAL]

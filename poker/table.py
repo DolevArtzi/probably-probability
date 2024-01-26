@@ -8,7 +8,6 @@ class Table:
         self.cards = list(range(1,53))
         self.suits = ['club','spade','diamond','heart']
         self.card_names = ['Ace','2','3','4','5','6','7','8','9','10','Jack','Queen','King']
-        self.active = [True for _ in range(n)] #removable i think
         self.round = 0
         self.last = -1
         self.table = []
@@ -49,7 +48,6 @@ class Table:
 
     def reset(self):
         for i in range(self.n):
-            self.active[i] = True
             self.players[i].setHand(())
         self.round = 0
         self.last = -1

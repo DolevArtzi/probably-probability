@@ -46,7 +46,6 @@ class Combiner:
             for num_hand in range(2,-1,-1):
                 num_unknown = max(rest - num_hand,0)
                 if num_unknown <= max_unknowns and num_cot + num_hand + num_unknown == 5:
-                    print(num_open,num_cot,num_hand,num_unknown)
                     r = self._stagedCombine([x,y],bank,num_hand,num_unknown)
                     if not r:
                         ans.append([cards_on_table])
@@ -73,13 +72,6 @@ class Combiner:
             r = FNode(f=COMB,children=[bank,rest]).apply()
             ans.append(FNode(f=PROD,children=[x,r]).apply())
         return FNode(f=CHAIN,children=ans).apply()
-
-    def _reduce(self,f,l):
-        if len(l) == 1:
-            return l[0]
-        for i in range(len(l)-1):
-            l[i+1] = f(l[i+1],l[i])
-        return l[-1]
 
 class FNode:
     """
