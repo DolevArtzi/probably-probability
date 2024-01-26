@@ -16,7 +16,7 @@ class Game:
         if not statMode and start:
             self.start()
 
-    def start(self,statMode=False,_print=True,_display=False,_sort=True):
+    def start(self,statMode=False,_probMode=True,_print=True,_display=False,_sort=True):
     
         self.t.reset()
         self.t.deal()
@@ -28,39 +28,41 @@ class Game:
         # print(l1,l2,l1*l2)
 
         self.t.progress()
-        x = self.e.c._getOppCombos(self.t.players[0],self.t)
-        y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
-        l1 = len(x)
-        l2 = len(y)
-        # print(self.e.classProbabilities2(y))
-        best_score, p, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
-        print(f'Best Guaranteed: {best_score}, Prob. of Improving: {p}')
-        m = {k:f'{probs[k]:.3f}' for k in probs}
-        print(f'Prob. of Improving to Score Class: {m}')
-        # print(l1,l2,l1*l2)
+        if _probMode:
+            x = self.e.c._getOppCombos(self.t.players[0],self.t)
+            y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
+            l1 = len(x)
+            l2 = len(y)
+            # print(self.e.classProbabilities2(y))
+            best_score, p, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
+            print(f'Best Guaranteed: {best_score}, Prob. of Improving: {p}')
+            m = {k:f'{probs[k]:.3f}' for k in probs}
+            print(f'Prob. of Improving to Score Class: {m}')
+            # print(l1,l2,l1*l2)
+            print()
+        self.t.progress()
+        if _probMode:
+            x = self.e.c._getOppCombos(self.t.players[0],self.t)
+            y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
+            l1 = len(x)
+            l2 = len(y)
+            # print(self.e.classProbabilities2(y))
+            best_score, p, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
+            print(f'Best Guaranteed: {best_score}, Prob. of Improving: {p}')
+            m = {k:f'{probs[k]:.3f}' for k in probs}
+            print(f'Prob. of Improving to Score Class: {m}')
+            # print(l1,l2,l1*l2)
 
         self.t.progress()
-
-        x = self.e.c._getOppCombos(self.t.players[0],self.t)
-        y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
-        l1 = len(x)
-        l2 = len(y)
-        # print(self.e.classProbabilities2(y))
-        best_score, p, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
-        print(f'Best Guaranteed: {best_score}, Prob. of Improving: {p}')
-        m = {k:f'{probs[k]:.3f}' for k in probs}
-        print(f'Prob. of Improving to Score Class: {m}')
-        # print(l1,l2,l1*l2)
-
-        self.t.progress()
-        x = self.e.c._getOppCombos(self.t.players[0],self.t)
-        y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
-        l1 = len(x)
-        l2 = len(y)
-        # print(self.e.classProbabilities2(y))
-        # best_score, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
-        # print(f'Best Score Guaranteed: {best_score}')        
-        # print(l1,l2,l1*l2)
+        if _probMode:
+            x = self.e.c._getOppCombos(self.t.players[0],self.t)
+            y = self.e.c._getPlayerCombos(self.t.players[0],self.t)
+            l1 = len(x)
+            l2 = len(y)
+            # print(self.e.classProbabilities2(y))
+            # best_score, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
+            # print(f'Best Score Guaranteed: {best_score}')        
+            # print(l1,l2,l1*l2)
         if not statMode:
             if _print:
                 self.t.printTable()
