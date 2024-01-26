@@ -117,5 +117,15 @@ class FNode:
             res.append(r)
         return res
 
+    """
+    Applies the relevant combining function to self.children
+    if self.f == COMB: if self.children is [bank,num], returns choose(bank,num)
+                       otherwise, maps comb on each child, which must be of the form [bank_i,num_i]
+    if self.f == CHAIN: appends all the combinations in self.children together
+    if self.f == PROD: equivalent to reduce(self.children,prod)
+    if self.f == COMBPROD: maps comb. on each child, then reduces the result with prod
+    if self.f == COMBCHAIN: maps comb. on each child, then reduces the result with chain
+
+    """
     def apply(self):
         return list(self._treeApply())
