@@ -20,10 +20,10 @@ class Game:
         self.t.reset()
         if _inject != []:
             injected_hands = []
-            if len(_inject) > 1:
-                injected_cot, injected_hands = _inject
-            else:
+            if len(_inject) > 2: # not (cot,hands), just cot
                 injected_cot = _inject
+            else:
+                injected_cot, injected_hands = _inject
             self.t.inject(injected_cot,injected_hands)
         self.t.deal()
         # x = self.e.c._getOppCombos(self.t.players[0],self.t)
@@ -42,7 +42,7 @@ class Game:
             # print(self.e.classProbabilities2(y))
             best_score, p, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
             print(f'Best Guaranteed: {best_score}, Prob. of Improving: {p}')
-            m = {k:f'{probs[k]:.3f}' for k in probs}
+            m = {k:f'{probs[k]:.6f}' for k in probs}
             print(f'Prob. of Improving to Score Class: {m}')
             # print(l1,l2,l1*l2)
             print()
@@ -55,7 +55,7 @@ class Game:
             # print(self.e.classProbabilities2(y))
             best_score, p, probs = self.e.probOfImprovement(y,self.t.players[0],self.t)
             print(f'Best Guaranteed: {best_score}, Prob. of Improving: {p}')
-            m = {k:f'{probs[k]:.3f}' for k in probs}
+            m = {k:f'{probs[k]:.6f}' for k in probs}
             print(f'Prob. of Improving to Score Class: {m}')
             # print(l1,l2,l1*l2)
 

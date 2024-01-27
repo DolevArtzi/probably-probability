@@ -19,26 +19,37 @@ class Table:
         if self.n > 26:
             return
         shuffle(self.cards)
-        i = 0
         if self._inject:
-            for i,h in enumerate(self._injected_hands):
-                self.players[i].setHand(h)
-                for x in h:
-                    self.cards.remove(x)
-                    self.cards.append(x)
-                i += 2
+            t = 0
+            # print(self._injected_cot)
+            for c in self._injected_cot:
+                # print(c,self.cards)
+                self.cards.remove(c)
+                self.cards.insert(0,c)
+                t += 1
+            for i,(x,y) in enumerate(self._injected_hands):
+                self.players[i].setHand((x,y))
+                for c in (x,y):
+                    self.cards.remove(c)
+                    self.cards.insert(0,c)
+                    t += 1
+            self.last = t
+            # for i,h in enumerate(self._injected_hands):
+            #     self.players[i].setHand(h)
+            #     for x in h:
+            #         self.cards.remove(x)
+            #         self.cards.insert(0,x)
+            #     self.last += 2
             if len(self._injected_hands) < self.n:
                 for p in self.players[len(self._injected_hands):]: 
-                    x,y = self.cards[i],self.cards[i+1]
-                    i += 2
+                    x,y = self.cards[self.last],self.cards[self.last+1]
+                    self.last += 2
                     p.setHand((x,y))
-                self.last = i
         else:
             for p in self.players:
-                x,y = self.cards[i],self.cards[i+1]
-                i += 2
+                x,y = self.cards[self.last],self.cards[self.last+1]
+                self.last += 2
                 p.setHand((x,y))
-            self.last = i
 
     """
     cards are represented by 1-52. 1-13 are clubs, with 1 being Ace and 13 being King. The pattern continues according
@@ -88,7 +99,10 @@ class Table:
             else:
                 # gets the fourth card in self._injected_cot if we're on the turn, the fifth if the river
                 # print(k,self.table,self._injected_cot,self.cards,self.last)
-                self.table.append(self._injected_cot[len(self.table)]) 
+                c = self._injected_cot[len(self.table)]
+                self.table.append(c)
+                self.cards.remove(c)
+                self.cards.insert(0,c)
                 self.last += 1
         else:
             for j in range(k):
