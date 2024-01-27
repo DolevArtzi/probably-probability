@@ -16,9 +16,15 @@ class Game:
         if not statMode and start:
             self.start()
 
-    def start(self,statMode=False,_probMode=True,_print=True,_display=False,_sort=True):
-    
+    def start(self,statMode=False,_probMode=True,_print=True,_display=False,_sort=True,_inject=[]):
         self.t.reset()
+        if _inject != []:
+            injected_hands = []
+            if len(_inject) > 1:
+                injected_cot, injected_hands = _inject
+            else:
+                injected_cot = _inject
+            self.t.inject(injected_cot,injected_hands)
         self.t.deal()
         # x = self.e.c._getOppCombos(self.t.players[0],self.t)
         # y = self.e.c._getPlayerCombos(self.t.players[0],self.t)

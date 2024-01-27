@@ -9,19 +9,36 @@ class Table:
         self.suits = ['club','spade','diamond','heart']
         self.card_names = ['Ace','2','3','4','5','6','7','8','9','10','Jack','Queen','King']
         self.round = 0
-        self.last = -1
+        self.last = 0
         self.table = []
+        self._inject = False
+        self._injected_cot = []
+        self._injected_hands = []
 
     def deal(self):
         if self.n > 26:
             return
         shuffle(self.cards)
         i = 0
-        for p in self.players:
-            x,y = self.cards[i],self.cards[i+1]
-            i+=2
-            p.setHand((x,y))
-        self.last = i
+        if self._inject:
+            for i,h in enumerate(self._injected_hands):
+                self.players[i].setHand(h)
+                for x in h:
+                    self.cards.remove(x)
+                    self.cards.append(x)
+                i += 2
+            if len(self._injected_hands) < self.n:
+                for p in self.players[len(self._injected_hands):]: 
+                    x,y = self.cards[i],self.cards[i+1]
+                    i += 2
+                    p.setHand((x,y))
+                self.last = i
+        else:
+            for p in self.players:
+                x,y = self.cards[i],self.cards[i+1]
+                i += 2
+                p.setHand((x,y))
+            self.last = i
 
     """
     cards are represented by 1-52. 1-13 are clubs, with 1 being Ace and 13 being King. The pattern continues according
@@ -47,16 +64,36 @@ class Table:
             print(x) 
 
     def reset(self):
+        self._inject = False
+        self._injected_cot = []
+        self._injected_hands = []
         for i in range(self.n):
             self.players[i].setHand(())
         self.round = 0
-        self.last = -1
+        self.last = 0
         self.table = []
 
     def open(self,k):
-        for j in range(k):
-            self.table.append(self.cards[self.last])
-            self.last+=1
+        if self._inject:
+            if k == 3:
+                for i in range(k):
+                    c = self._injected_cot[i]
+                    self.table.append(c)
+                    self.cards.remove(c)
+                    self.cards.insert(0,c)
+                    self.last += 1
+            elif len(self.table) >= len(self._injected_cot): # didn't provide a full injected table
+                self.table.append(self.cards[self.last])
+                self.last += 1
+            else:
+                # gets the fourth card in self._injected_cot if we're on the turn, the fifth if the river
+                # print(k,self.table,self._injected_cot,self.cards,self.last)
+                self.table.append(self._injected_cot[len(self.table)]) 
+                self.last += 1
+        else:
+            for j in range(k):
+                self.table.append(self.cards[self.last])
+                self.last += 1
 
     def progress(self):
         if self.round == 0:
@@ -78,6 +115,11 @@ class Table:
 
     def getCardsOnTable(self):
         return self.table
+
+    def inject(self,cots,hands):
+        self._inject = True
+        self._injected_cot = cots
+        self._injected_hands = hands
 
 if __name__ == '__main__':
     t = Table()
