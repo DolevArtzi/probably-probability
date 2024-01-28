@@ -1,6 +1,6 @@
-## Poker Simulator
+# **Poker Simulator**
 <img width="800" alt="trippy_panda" src="https://github.com/DolevArtzi/probably-probability/assets/85849407/54ab6384-4870-4362-99d4-4434f2688400">
-
+_______________________________________________________________________________________________
 
 - run `stat.py` for a chart like this:
 <img width="762" alt="Screenshot 2023-04-30 at 8 45 08 PM" src="https://user-images.githubusercontent.com/85849407/235384372-82723344-aeca-4325-b11b-b3b213f87b7c.png">
